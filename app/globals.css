@@ -130,3 +130,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide scrollbar for category selector horizontal scrolling */
+.category-scroll::-webkit-scrollbar {
+  display: none;
+}
+.category-scroll {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

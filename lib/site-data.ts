@@ -1,56 +1,108 @@
-import React from "react"
-import {
-  Coffee,
-  Utensils,
-  Salad,
-  Soup,
-  Sandwich,
-  Pizza,
-  Flame,
-  Award,
-  Beef,
-  Wine,
-  IceCream,
-  Baby,
-} from "lucide-react"
+// ============================================================================
+//  DATOS DEL SITIO — Maria Bela
+//  Este archivo contiene TODOS los datos por defecto del menú y del negocio.
+//  El panel de administración (/admin) puede editar estos datos y los guarda
+//  en el navegador (localStorage). Si no hay nada guardado, se usan estos.
+// ============================================================================
 
-export const MENU_DATABASE = {
+export interface Dish {
+  id: number
+  name: string
+  price: number
+  ingredients: string
+  tags?: string[]
+  image?: string
+}
+
+export interface Category {
+  title: string
+  subtitle: string
+  icon: string // nombre del icono (ver lib/icons.tsx)
+  items: Dish[]
+}
+
+export type MenuData = Record<string, Category>
+
+export interface SiteSettings {
+  // Contacto
+  whatsapp: string // solo números, formato internacional. Ej: 5215512345678
+  phoneDisplay: string // como se muestra. Ej: "55 1234 5678"
+  instagramUrl: string
+  instagramHandle: string
+  facebookUrl: string
+  // Ubicación
+  addressLine1: string
+  addressLine2: string
+  mapsUrl: string
+  // Horario
+  scheduleDays: string // Ej: "Lunes a Sábado"
+  scheduleHours: string // Ej: "9:00 AM — 4:00 PM"
+  scheduleShort: string // Ej: "LUN-SÁB 9:00 — 16:00" (usado en el header)
+  // Código QR del menú
+  menuUrl: string // URL a la que apunta el QR. Vacío = usa la URL actual del sitio.
+  // Recomendación del Chef / Platillo del día
+  featuredDishIds: number[] // ids de platillos elegidos a mano, en el orden que se muestran. Vacío = automático.
+}
+
+// ---------------------------------------------------------------------------
+//  Configuración del negocio por defecto
+// ---------------------------------------------------------------------------
+export const DEFAULT_SETTINGS: SiteSettings = {
+  whatsapp: "5215512345678",
+  phoneDisplay: "55 1234 5678",
+  instagramUrl: "https://www.instagram.com/mariabelacoacalco",
+  instagramHandle: "@mariabelacoacalco",
+  facebookUrl: "https://www.facebook.com/mariabelacoacalco",
+  addressLine1: "Eje 8, Villa de las Flores",
+  addressLine2: "Coacalco de Berriozábal, EdoMéx.",
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Maria+Bela+Coacalco",
+  scheduleDays: "Lunes a Sábado",
+  scheduleHours: "9:00 AM — 4:00 PM",
+  scheduleShort: "LUN-SÁB 9:00 — 16:00",
+  menuUrl: "",
+  featuredDishIds: [],
+}
+
+// ---------------------------------------------------------------------------
+//  Menú por defecto
+// ---------------------------------------------------------------------------
+export const DEFAULT_MENU: MenuData = {
   desayunos: {
     title: "Desayunos",
     subtitle: "Incluyen Jugo o Fruta, Café o Té",
-    icon: <Coffee className="w-5 h-5" />,
+    icon: "Coffee",
     items: [
-      { id: 1, name: "Volcán de Chilaquil", price: 109, ingredients: "Sourdough con chilaquiles, pollo, crema y queso gratinado.", tags: ["Estrella"], image: "https://images.unsplash.com/photo-1599387737281-8075926123bc?q=80&w=600" },
-      { id: 2, name: "Huevos al Gusto", price: 80, ingredients: "Salchicha, jamón, estrellados, rancheros, divorciados, a la mexicana, tocino o a la albañil." },
-      { id: 3, name: "Omelette al Gusto", price: 95, ingredients: "Champiñón, jamón, espinaca, tocino, flor de calabaza y elote, quesos o chorizo." },
+      { id: 1, name: "Volcán de Chilaquil", price: 109, ingredients: "Sourdough con chilaquiles, pollo, crema y queso gratinado.", tags: ["Estrella"], image: "https://images.unsplash.com/photo-1600335895229-6e75511892c8?q=80&w=600" },
+      { id: 2, name: "Huevos al Gusto", price: 80, ingredients: "Salchicha, jamón, estrellados, rancheros, divorciados, a la mexicana, tocino o a la albañil.", image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=600" },
+      { id: 3, name: "Omelette al Gusto", price: 95, ingredients: "Champiñón, jamón, espinaca, tocino, flor de calabaza y elote, quesos o chorizo.", image: "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?q=80&w=600" },
       { id: 4, name: "Omelette Gourmet", price: 99, ingredients: "Espinaca y queso de cabra. Un inicio elegante.", tags: ["Gourmet"], image: "https://images.unsplash.com/photo-1510693206972-df098062cb71?q=80&w=600" },
-      { id: 5, name: "Molletes Tradicionales", price: 70, ingredients: "Frijol refrito, jamón, queso gratinado y pico de gallo (orden de 2)." },
-      { id: 6, name: "Molletes con Chorizo o Champiñón", price: 95, ingredients: "Molletes especiales con chorizo o champiñones." },
-      { id: 7, name: "Croissant de Jamón", price: 89, ingredients: "Jamón, queso panela y manchego, lechuga y jitomate." },
-      { id: 8, name: "Bagel de Jamón", price: 89, ingredients: "Bagel, huevo, jamón, queso manchego, queso panela, lechuga y jitomate." },
-      { id: 9, name: "Chilaquiles", price: 70, ingredients: "Verdes, rojos o divorciados." },
-      { id: 10, name: "Enfrijoladas", price: 97, ingredients: "Enfrijoladas con crema, queso y aguacate (orden de 3)." },
-      { id: 11, name: "Enchiladas", price: 97, ingredients: "Verdes, rojas o divorciadas, rellenas de pollo (orden de 3)." },
-      { id: 12, name: "Enchiladas Suizas", price: 120, ingredients: "Con ajonjolí y queso gratinado (orden de 3).", tags: ["Premium"] },
-      { id: 13, name: "Wafles Dulces", price: 85, ingredients: "Mix de berries, chocolate y crema dulce." },
-      { id: 14, name: "Desayuno Mariabela", price: 95, ingredients: "Orden de wafles con huevo estrellado o al gusto.", tags: ["De la Casa"] },
-      { id: 15, name: "Huevos Mariabela", price: 80, ingredients: "Huevo revuelto en una salsa de guajillo." },
-      { id: 16, name: "Sope Light", price: 80, ingredients: "Nopal con pollo deshebrado bañado en salsa verde, lechuga y queso.", tags: ["Light"] },
-      { id: 17, name: "Sandwich Gratinado", price: 97, ingredients: "Pan de caja, jamón, lechuga, jitomate, queso gratinado y huevo estrellado." },
-      { id: 18, name: "Sincronizadas", price: 69, ingredients: "2 tortillas de harina con jamón, queso manchego, queso Oaxaca y salsa mexicana." },
-      { id: 19, name: "Tacos Campestres", price: 80, ingredients: "3 tacos de hoja de lechuga con champiñones, elote, jitomate y pollo.", tags: ["Light"] },
-      { id: 20, name: "Wraps", price: 80, ingredients: "Tortilla de harina u hoja de lechuga rellena de jitomate, cebolla, elote, champiñón, atún o pollo." },
-      { id: 21, name: "Árabe Mariabela", price: 89, ingredients: "Jamón de pavo, queso panela, manzana, lechuga y pepino." },
-      { id: 22, name: "Pechuga Napolitana", price: 140, ingredients: "Jamón, queso gratinado, salsa de jitomate con guarnición del día.", tags: ["Premium"] },
-      { id: 23, name: "Sopesitos Sencillos", price: 70, ingredients: "Tres sopesitos, frijol refrito, crema, queso y lechuga." },
-      { id: 24, name: "Sopesitos Pollo o Carne Asada", price: 97, ingredients: "Tres sopesitos, frijol refrito, lechuga, crema y queso." },
-      { id: 25, name: "Hotcakes", price: 75, ingredients: "Orden de 3 hotcakes esponjosos." },
+      { id: 5, name: "Molletes Tradicionales", price: 70, ingredients: "Frijol refrito, jamón, queso gratinado y pico de gallo (orden de 2).", image: "https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=600" },
+      { id: 6, name: "Molletes con Chorizo o Champiñón", price: 95, ingredients: "Molletes especiales con chorizo o champiñones.", image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=600" },
+      { id: 7, name: "Croissant de Jamón", price: 89, ingredients: "Jamón, queso panela y manchego, lechuga y jitomate.", image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=600" },
+      { id: 8, name: "Bagel de Jamón", price: 89, ingredients: "Bagel, huevo, jamón, queso manchego, queso panela, lechuga y jitomate.", image: "https://images.unsplash.com/photo-1541532713592-79a0317b6b77?q=80&w=600" },
+      { id: 9, name: "Chilaquiles", price: 70, ingredients: "Verdes, rojos o divorciados.", image: "https://images.unsplash.com/photo-1600335895229-6e75511892c8?q=80&w=600" },
+      { id: 10, name: "Enfrijoladas", price: 97, ingredients: "Enfrijoladas con crema, queso y aguacate (orden de 3).", image: "https://images.unsplash.com/photo-1628191139360-408a40f8ee96?q=80&w=600" },
+      { id: 11, name: "Enchiladas", price: 97, ingredients: "Verdes, rojas o divorciadas, rellenas de pollo (orden de 3).", image: "https://images.unsplash.com/photo-1534352591122-7d12cd504b1a?q=80&w=600" },
+      { id: 12, name: "Enchiladas Suizas", price: 120, ingredients: "Con ajonjolí y queso gratinado (orden de 3).", tags: ["Premium"], image: "https://images.unsplash.com/photo-1534352591122-7d12cd504b1a?q=80&w=600" },
+      { id: 13, name: "Wafles Dulces", price: 85, ingredients: "Mix de berries, chocolate y crema dulce.", image: "https://images.unsplash.com/photo-1562376502-6f7694998877?q=80&w=600" },
+      { id: 14, name: "Desayuno Mariabela", price: 95, ingredients: "Orden de wafles con huevo estrellado o al gusto.", tags: ["De la Casa"], image: "https://images.unsplash.com/photo-1562376502-6f7694998877?q=80&w=600" },
+      { id: 15, name: "Huevos Mariabela", price: 80, ingredients: "Huevo revuelto en una salsa de guajillo.", image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=600" },
+      { id: 16, name: "Sope Light", price: 80, ingredients: "Nopal con pollo deshebrado bañado en salsa verde, lechuga y queso.", tags: ["Light"], image: "https://images.unsplash.com/photo-1628191139360-408a40f8ee96?q=80&w=600" },
+      { id: 17, name: "Sandwich Gratinado", price: 97, ingredients: "Pan de caja, jamón, lechuga, jitomate, queso gratinado y huevo estrellado.", image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=600" },
+      { id: 18, name: "Sincronizadas", price: 69, ingredients: "2 tortillas de harina con jamón, queso manchego, queso Oaxaca y salsa mexicana.", image: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600" },
+      { id: 19, name: "Tacos Campestres", price: 80, ingredients: "3 tacos de hoja de lechuga con champiñones, elote, jitomate y pollo.", tags: ["Light"], image: "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?q=80&w=600" },
+      { id: 20, name: "Wraps", price: 80, ingredients: "Tortilla de harina u hoja de lechuga rellena de jitomate, cebolla, elote, champiñón, atún o pollo.", image: "https://images.unsplash.com/photo-1626700051175-6518c4793f4f?q=80&w=600" },
+      { id: 21, name: "Árabe Mariabela", price: 89, ingredients: "Jamón de pavo, queso panela, manzana, lechuga y pepino.", image: "https://images.unsplash.com/photo-1626700051175-6518c4793f4f?q=80&w=600" },
+      { id: 22, name: "Pechuga Napolitana", price: 140, ingredients: "Jamón, queso gratinado, salsa de jitomate con guarnición del día.", tags: ["Premium"], image: "https://images.unsplash.com/photo-1632778149975-420e0e75ee6d?q=80&w=600" },
+      { id: 23, name: "Sopesitos Sencillos", price: 70, ingredients: "Tres sopesitos, frijol refrito, crema, queso y lechuga.", image: "https://images.unsplash.com/photo-1628191139360-408a40f8ee96?q=80&w=600" },
+      { id: 24, name: "Sopesitos Pollo o Carne Asada", price: 97, ingredients: "Tres sopesitos, frijol refrito, lechuga, crema y queso.", image: "https://images.unsplash.com/photo-1628191139360-408a40f8ee96?q=80&w=600" },
+      { id: 25, name: "Hotcakes", price: 75, ingredients: "Orden de 3 hotcakes esponjosos.", image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?q=80&w=600" },
     ],
   },
   entradas: {
     title: "Entradas",
     subtitle: "Para compartir al estilo de la casa",
-    icon: <Utensils className="w-5 h-5" />,
+    icon: "Utensils",
     items: [
       { id: 30, name: "Espinacas Mariabela", price: 90, ingredients: "Espinacas gratinadas en queso mozzarella y crema.", tags: ["Clásico"] },
       { id: 31, name: "Plato de Carnes Frías", price: 105, ingredients: "Jamón, salchicha, salami, melón, jamón serrano, fresa y pera.", image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=600" },
@@ -69,7 +121,7 @@ export const MENU_DATABASE = {
   ensaladas: {
     title: "Ensaladas",
     subtitle: "Frescura y sabor en cada bocado",
-    icon: <Salad className="w-5 h-5" />,
+    icon: "Salad",
     items: [
       { id: 50, name: "Ensalada César", price: 105, ingredients: "Lechuga, queso parmesano, crotones, pechuga de pollo asada y aderezo césar.", image: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=600" },
       { id: 51, name: "Ensalada Caprese", price: 110, ingredients: "Queso mozzarella, rebanadas de jitomate, hojas de albahaca y aceite de olivo.", tags: ["Italia"] },
@@ -84,7 +136,7 @@ export const MENU_DATABASE = {
   sopas: {
     title: "Sopas",
     subtitle: "Caldos reconfortantes",
-    icon: <Soup className="w-5 h-5" />,
+    icon: "Soup",
     items: [
       { id: 60, name: "Sopa Azteca", price: 85, ingredients: "Tradicional sopa mexicana con tortilla, aguacate y queso." },
       { id: 61, name: "Sopa de Champiñón", price: 89, ingredients: "Crema de champiñones frescos." },
@@ -95,7 +147,7 @@ export const MENU_DATABASE = {
   paninis: {
     title: "Paninis & Hamburguesas",
     subtitle: "Especialidades para el mediodía",
-    icon: <Sandwich className="w-5 h-5" />,
+    icon: "Sandwich",
     items: [
       { id: 70, name: "Panini de Jamón de Pavo", price: 130, ingredients: "Pan artesanal con mayonesa, pepino, jitomate, germen, lechuga, jamón de pavo y queso panela." },
       { id: 71, name: "Panini de Pechuga Asada", price: 145, ingredients: "Pan artesanal con mayonesa, pepino, jitomate, germen, lechuga y pechuga asada.", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600" },
@@ -110,7 +162,7 @@ export const MENU_DATABASE = {
   pastas: {
     title: "Pastas",
     subtitle: "Recetas artesanales de la tradición italiana",
-    icon: <Pizza className="w-5 h-5" />,
+    icon: "Pizza",
     items: [
       { id: 80, name: "Lasaña Boloñesa", price: 175, ingredients: "Receta secreta de la casa con carne de res, pomodoro y mozzarella gratinada.", tags: ["Best Seller"], image: "https://images.unsplash.com/photo-1502998070258-dc1338445ac2?q=80&w=600" },
       { id: 81, name: "Pasta Alfredo", price: 95, ingredients: "Pasta larga a base de crema, vino blanco, parmesano, sal y pimienta." },
@@ -137,7 +189,7 @@ export const MENU_DATABASE = {
   pizzas: {
     title: "Pizzas",
     subtitle: "Masa delgada y crujiente al horno",
-    icon: <Flame className="w-5 h-5" />,
+    icon: "Flame",
     items: [
       { id: 100, name: "Pizza Peperoni", price: 99, ingredients: "Tomate, mozzarella y peperoni.", image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=600" },
       { id: 101, name: "Pizza Prosciutto", price: 110, ingredients: "Tomate, mozzarella y jamón serrano.", tags: ["Italia"], image: "https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?q=80&w=600" },
@@ -153,7 +205,7 @@ export const MENU_DATABASE = {
   especialidades: {
     title: "Especialidades",
     subtitle: "Creaciones del Chef",
-    icon: <Award className="w-5 h-5" />,
+    icon: "Award",
     items: [
       { id: 110, name: "Milanesa Natural", price: 155, ingredients: "Milanesa de res o pollo 180g con verduras cocidas y pasta al burro." },
       { id: 111, name: "Milanesa Gratinada", price: 165, ingredients: "Milanesa de res 180g con queso manchego gratinado, ensalada y papas." },
@@ -174,7 +226,7 @@ export const MENU_DATABASE = {
   cortes: {
     title: "Cortes Selectos",
     subtitle: "Acompañados de papa al horno y verduras",
-    icon: <Beef className="w-5 h-5" />,
+    icon: "Beef",
     items: [
       { id: 130, name: "Salmón al Limón", price: 245, ingredients: "280g de salmón fresco en salsa al limón con ensalada y pasta al burro.", tags: ["Recomendado"], image: "https://images.unsplash.com/photo-1485921325833-c519f76c4927?q=80&w=600" },
       { id: 131, name: "New York 350g", price: 295, ingredients: "Corte premium acompañado de papa al horno y verduras a la mantequilla.", tags: ["Premium"] },
@@ -185,7 +237,7 @@ export const MENU_DATABASE = {
   bebidas: {
     title: "Bebidas",
     subtitle: "Refrescantes y Especiales",
-    icon: <Wine className="w-5 h-5" />,
+    icon: "Wine",
     items: [
       { id: 140, name: "Jugo Natural 300ml", price: 45, ingredients: "Naranja o verde." },
       { id: 141, name: "Frapuccino", price: 55, ingredients: "Vainilla, rompope, crema irlandesa, caramelo, moka, cajeta, amaretto, mango, fresa, sandía, mora azul o piña colada." },
@@ -214,7 +266,7 @@ export const MENU_DATABASE = {
   calientes: {
     title: "Bebidas Calientes",
     subtitle: "Para reconfortar el alma",
-    icon: <Coffee className="w-5 h-5" />,
+    icon: "Coffee",
     items: [
       { id: 170, name: "Espresso", price: 25, ingredients: "Shot de espresso." },
       { id: 171, name: "Latte", price: 25, ingredients: "Espresso con leche vaporizada." },
@@ -231,7 +283,7 @@ export const MENU_DATABASE = {
   postres: {
     title: "Postres",
     subtitle: "El dulce final perfecto",
-    icon: <IceCream className="w-5 h-5" />,
+    icon: "IceCream",
     items: [
       { id: 180, name: "Helado Tempura", price: 65, ingredients: "Helado empanizado y frito.", image: "https://images.unsplash.com/photo-1488900128323-21503983a07e?q=80&w=600" },
       { id: 181, name: "Cheesecake", price: 65, ingredients: "Pay de queso cremoso.", tags: ["Favorito"] },
@@ -244,7 +296,7 @@ export const MENU_DATABASE = {
   infantil: {
     title: "Menú Infantil",
     subtitle: "Para los pequeños de la casa",
-    icon: <Baby className="w-5 h-5" />,
+    icon: "Baby",
     items: [
       { id: 190, name: "Pechuga Empanizada con Avena", price: 140, ingredients: "Acompañada de papas a la francesa o ensalada." },
       { id: 191, name: "Pasta Fusilli Alfredo", price: 140, ingredients: "Con cubitos de pollo asado." },
@@ -254,3 +306,9 @@ export const MENU_DATABASE = {
     ],
   },
 }
+
+// ---------------------------------------------------------------------------
+//  Contraseña del panel de administración.
+//  ⚠️ CAMBIA ESTA CONTRASEÑA por una que solo la jefa conozca.
+// ---------------------------------------------------------------------------
+export const ADMIN_PASSWORD = "mariabela2026"
