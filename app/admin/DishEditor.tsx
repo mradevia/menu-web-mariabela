@@ -11,8 +11,13 @@ import {
   DollarSign,
   AlignLeft,
   RefreshCw,
+  Loader2,
 } from "lucide-react"
 import type { Dish } from "@/lib/site-data"
+import { createClient } from "@/lib/supabase/client"
+import { uploadDishImage } from "@/lib/services/storage"
+
+const USE_SUPABASE = process.env.NEXT_PUBLIC_DATA_SOURCE === "supabase"
 
 interface Props {
   dish: Dish | null // null = crear nuevo
@@ -25,6 +30,7 @@ export default function DishEditor({ dish, onSave, onClose }: Props) {
   const [price, setPrice] = useState("")
   const [ingredients, setIngredients] = useState("")
   const [image, setImage] = useState("")
+  const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
     setName(dish?.name ?? "")
@@ -54,47 +60,77 @@ export default function DishEditor({ dish, onSave, onClose }: Props) {
     })
   }
 
-  // Subir imagen desde el dispositivo, redimensionarla y comprimirla usando Canvas para evitar saturar localStorage
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Redimensiona y comprime la imagen con Canvas. Devuelve un canvas listo.
+  const compressToCanvas = (file: File): Promise<HTMLCanvasElement> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        const img = new Image()
+        img.onload = () => {
+          const canvas = document.createElement("canvas")
+          const MAX_WIDTH = 800
+          const MAX_HEIGHT = 600
+          let width = img.width
+          let height = img.height
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width
+              width = MAX_WIDTH
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height
+              height = MAX_HEIGHT
+            }
+          }
+
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext("2d")
+          if (!ctx) return reject(new Error("No se pudo procesar la imagen."))
+          ctx.drawImage(img, 0, 0, width, height)
+          resolve(canvas)
+        }
+        img.onerror = () => reject(new Error("No se pudo leer la imagen."))
+        img.src = event.target?.result as string
+      }
+      reader.onerror = () => reject(new Error("No se pudo leer el archivo."))
+      reader.readAsDataURL(file)
+    })
+
+  // Subir imagen: se comprime en el navegador y luego, según el modo:
+  //  - supabase -> se sube al bucket 'dish-images' y se guarda la URL pública.
+  //  - local    -> se guarda como Data URL base64 (comportamiento anterior).
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    e.target.value = "" // permite volver a elegir el mismo archivo
 
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      const img = new Image()
-      img.onload = () => {
-        const canvas = document.createElement("canvas")
-        const MAX_WIDTH = 800
-        const MAX_HEIGHT = 600
-        let width = img.width
-        let height = img.height
+    try {
+      setUploading(true)
+      const canvas = await compressToCanvas(file)
 
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width
-            width = MAX_WIDTH
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height
-            height = MAX_HEIGHT
-          }
-        }
-
-        canvas.width = width
-        canvas.height = height
-
-        const ctx = canvas.getContext("2d")
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, width, height)
-          // Comprimir a JPEG con calidad de 0.7 para que pese ~30-60 KB en vez de megabytes
-          const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7)
-          setImage(compressedDataUrl)
-        }
+      if (USE_SUPABASE) {
+        const blob: Blob | null = await new Promise((res) =>
+          canvas.toBlob((b) => res(b), "image/jpeg", 0.7),
+        )
+        if (!blob) throw new Error("No se pudo comprimir la imagen.")
+        const supabase = createClient()
+        const url = await uploadDishImage(supabase, blob, "jpg")
+        setImage(url)
+      } else {
+        setImage(canvas.toDataURL("image/jpeg", 0.7))
       }
-      img.src = event.target?.result as string
+    } catch (err) {
+      console.error("Error al subir la imagen:", err)
+      alert(
+        "No se pudo subir la imagen. Verifica tu conexión e inténtalo de nuevo. " +
+          "(Si el problema persiste, revisa que tu sesión de administrador siga activa.)",
+      )
+    } finally {
+      setUploading(false)
     }
-    reader.readAsDataURL(file)
   }
 
   return (
@@ -169,7 +205,12 @@ export default function DishEditor({ dish, onSave, onClose }: Props) {
             </label>
 
             <div>
-              {image ? (
+              {uploading ? (
+                <div className="flex flex-col items-center justify-center gap-3 w-full h-40 border-2 border-dashed border-[#D4AF37]/50 rounded-xl bg-white">
+                  <Loader2 size={28} className="text-[#D4AF37] animate-spin" />
+                  <span className="text-xs text-stone-600 font-bold">Subiendo foto…</span>
+                </div>
+              ) : image ? (
                 <div className="relative group rounded-xl overflow-hidden border border-stone-200 bg-white shadow-sm">
                   <img src={image} alt="Vista previa" className="w-full h-48 object-cover" />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 hidden sm:flex">

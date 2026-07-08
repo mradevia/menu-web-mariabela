@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
 import { Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -57,6 +58,7 @@ export default function RootLayout({
     <html lang="es-MX">
       <body className={`font-sans antialiased`}>
         {children}
+        <Toaster richColors position="top-center" />
         <Analytics />
       </body>
     </html>

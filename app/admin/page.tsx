@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
+import { useRouter } from "next/navigation"
 import {
-  Lock,
   LogOut,
   Plus,
   Pencil,
@@ -24,106 +24,47 @@ import {
   Save,
   Undo,
   Redo,
+  ClipboardList,
+  ChefHat,
+  LayoutDashboard,
+  TrendingUp,
+  TrendingDown,
+  ShoppingBag,
+  Receipt,
+  QrCode,
+  CalendarDays,
+  Users,
+  FileText,
+  Package,
+  Ticket,
+  Bell,
+  Volume2,
+  VolumeX,
 } from "lucide-react"
 import { useSiteData } from "@/hooks/use-site-data"
 import { renderCategoryIcon } from "@/lib/icons"
-import { ADMIN_PASSWORD, type MenuData, type Dish, type Category, type SiteSettings } from "@/lib/site-data"
+import { type MenuData, type Dish, type Category, type SiteSettings } from "@/lib/site-data"
+import { createClient } from "@/lib/supabase/client"
+import { getDashboardStats, type DashboardStats } from "@/lib/services/orders"
+import Link from "next/link"
 import DishEditor from "./DishEditor"
 import CategoryEditor from "./CategoryEditor"
 import QrSection from "./QrSection"
 import FeaturedSection from "./FeaturedSection"
 
-const AUTH_KEY = "mariabela-admin-auth"
-
+// El acceso a esta página está protegido por app/admin/layout.tsx (gate por
+// rol con Supabase) y por el middleware. Aquí ya no hay contraseña.
 export default function AdminPage() {
-  const [authed, setAuthed] = useState(false)
-  const [checkingAuth, setCheckingAuth] = useState(true)
-
-  // Recordar sesión iniciada en este navegador.
-  useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem(AUTH_KEY) === "1") {
-      setAuthed(true)
-    }
-    setCheckingAuth(false)
-  }, [])
-
-  if (checkingAuth) {
-    return <div className="min-h-screen bg-[#0D261C]" />
-  }
-
-  if (!authed) {
-    return <LoginScreen onSuccess={() => setAuthed(true)} />
-  }
-
-  return <AdminPanel onLogout={() => setAuthed(false)} />
-}
-
-// ---------------------------------------------------------------------------
-//  Pantalla de acceso (contraseña)
-// ---------------------------------------------------------------------------
-function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState(false)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem(AUTH_KEY, "1")
-      onSuccess()
-    } else {
-      setError(true)
-    }
-  }
-
-  return (
-    <div className="min-h-screen bg-[#0D261C] flex items-center justify-center p-6">
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl p-8">
-        <div className="flex flex-col items-center text-center mb-6">
-          <div className="bg-[#0D261C] text-[#D4AF37] p-4 rounded-full mb-4">
-            <Lock size={28} />
-          </div>
-          <h1 className="font-serif text-2xl font-bold text-[#0D261C]">Panel de Maria Bela</h1>
-          <p className="text-stone-500 text-sm mt-1">Escribe la contraseña para administrar el menú.</p>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value)
-              setError(false)
-            }}
-            placeholder="Contraseña"
-            autoFocus
-            className={`w-full p-4 rounded-xl border-2 outline-none text-center text-lg transition-colors ${
-              error ? "border-red-400 bg-red-50" : "border-stone-300 focus:border-[#D4AF37]"
-            }`}
-          />
-          {error && <p className="text-red-500 text-sm text-center">Contraseña incorrecta. Intenta de nuevo.</p>}
-          <button
-            type="submit"
-            className="w-full py-4 rounded-xl bg-[#0D261C] text-white font-bold text-lg hover:bg-[#991B1B] transition-colors"
-          >
-            Entrar
-          </button>
-        </form>
-        <a
-          href="/"
-          className="block text-center text-stone-400 hover:text-[#0D261C] text-sm mt-6 transition-colors"
-        >
-          ← Volver al menú
-        </a>
-      </div>
-    </div>
-  )
+  return <AdminPanel />
 }
 
 // ---------------------------------------------------------------------------
 //  Panel principal
 // ---------------------------------------------------------------------------
-function AdminPanel({ onLogout }: { onLogout: () => void }) {
+function AdminPanel() {
+  const router = useRouter()
   const { menu, settings, loaded, saveMenu, saveSettings, resetAll } = useSiteData()
-  const [tab, setTab] = useState<"menu" | "negocio">("menu")
+  const [tab, setTab] = useState<"resumen" | "menu" | "negocio">("resumen")
 
   // Historial de cambios para Deshacer/Rehacer (Undo/Redo) a nivel global de AdminPanel
   const [history, setHistory] = useState<MenuData[]>([])
@@ -186,9 +127,11 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const canUndo = pointer > 0
   const canRedo = pointer < history.length - 1
 
-  const handleLogout = () => {
-    sessionStorage.removeItem(AUTH_KEY)
-    onLogout()
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.replace("/login")
+    router.refresh()
   }
 
   const totalDishes = useMemo(
@@ -237,6 +180,18 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
             )}
 
             <a
+              href="/pedidos"
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg text-xs font-bold transition-colors"
+            >
+              <ClipboardList size={15} /> <span className="hidden sm:inline">Pedidos</span>
+            </a>
+            <a
+              href="/cocina"
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg text-xs font-bold transition-colors"
+            >
+              <ChefHat size={15} /> <span className="hidden sm:inline">Cocina</span>
+            </a>
+            <a
               href="/"
               target="_blank"
               className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg text-xs font-bold transition-colors"
@@ -254,6 +209,14 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
 
         {/* Pestañas */}
         <div className="max-w-4xl mx-auto px-4 flex gap-1">
+          <button
+            onClick={() => setTab("resumen")}
+            className={`flex items-center gap-2 px-4 py-3 text-sm font-bold border-b-2 transition-colors ${
+              tab === "resumen" ? "border-[#D4AF37] text-[#D4AF37]" : "border-transparent text-stone-400 hover:text-white"
+            }`}
+          >
+            <LayoutDashboard size={16} /> Resumen
+          </button>
           <button
             onClick={() => setTab("menu")}
             className={`flex items-center gap-2 px-4 py-3 text-sm font-bold border-b-2 transition-colors ${
@@ -274,7 +237,9 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 pt-5">
-        {tab === "menu" ? (
+        {tab === "resumen" ? (
+          <DashboardSummary />
+        ) : tab === "menu" ? (
           <MenuManager
             menu={menu}
             saveMenu={updateMenu}
@@ -288,6 +253,350 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
           <BusinessManager menu={menu} settings={settings} saveSettings={saveSettings} />
         )}
       </main>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+//  Resumen del negocio (KPIs reales: ventas de hoy, pedidos activos, top productos)
+// ---------------------------------------------------------------------------
+interface NotificationItem {
+  id: string
+  type: "order" | "reservation"
+  title: string
+  description: string
+  time: Date
+  link: string
+}
+
+function DashboardSummary() {
+  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [notifications, setNotifications] = useState<NotificationItem[]>([])
+  const [soundEnabled, setSoundEnabled] = useState(true)
+
+  const supabase = useMemo(() => createClient(), [])
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const { data: ords } = await supabase
+        .from("orders")
+        .select("id, order_number, table:tables(number), created_at, status")
+        .in("status", ["pending", "confirmed"])
+        .order("created_at", { ascending: false })
+
+      const { data: resvs } = await supabase
+        .from("reservations")
+        .select("id, customer_name, party_size, reserved_for, created_at, status")
+        .eq("status", "pending")
+        .order("created_at", { ascending: false })
+
+      const mappedOrders: NotificationItem[] = (ords ?? []).map((o: any) => ({
+        id: o.id,
+        type: "order",
+        title: `Nuevo Pedido #${o.order_number}`,
+        description: o.table?.number != null ? `Mesa ${o.table.number}` : "Para llevar / Mostrador",
+        time: new Date(o.created_at),
+        link: "/pedidos"
+      }))
+
+      const mappedResvs: NotificationItem[] = (resvs ?? []).map((r: any) => ({
+        id: r.id,
+        type: "reservation",
+        title: `Nueva Reservación`,
+        description: `${r.customer_name} (${r.party_size} pers)`,
+        time: new Date(r.created_at),
+        link: "/reservaciones"
+      }))
+
+      setNotifications([...mappedOrders, ...mappedResvs].sort((a, b) => b.time.getTime() - a.time.getTime()))
+    } catch (e) {
+      console.error("Error fetching notifications:", e)
+    }
+  }, [supabase])
+
+  const loadStats = useCallback(async () => {
+    try {
+      const data = await getDashboardStats(supabase)
+      setStats(data)
+    } catch (e) {
+      console.error("Error al cargar el resumen:", e)
+    } finally {
+      setLoading(false)
+    }
+  }, [supabase])
+
+  const playChime = useCallback(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = "sine"
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime) // D5
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1) // A5
+      gain.gain.setValueAtTime(0.08, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4)
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start()
+      osc.stop(ctx.currentTime + 0.4)
+    } catch (e) {
+      console.error("Audio error:", e)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadStats()
+    fetchNotifications()
+
+    // Suscripción a cambios en tiempo real
+    const channel = supabase
+      .channel("admin-dashboard-notifications")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "orders" },
+        (payload) => {
+          if (payload.new.status === "pending" || payload.new.status === "confirmed") {
+            if (soundEnabled) playChime()
+            fetchNotifications()
+            loadStats()
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "orders" },
+        (payload) => {
+          if (payload.new.status === "pending" || payload.new.status === "confirmed") {
+            if (payload.old.status !== "pending" && payload.old.status !== "confirmed") {
+              if (soundEnabled) playChime()
+            }
+          }
+          fetchNotifications()
+          loadStats()
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "reservations" },
+        (payload) => {
+          if (payload.new.status === "pending") {
+            if (soundEnabled) playChime()
+            fetchNotifications()
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "reservations" },
+        () => {
+          fetchNotifications()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase, fetchNotifications, loadStats, playChime, soundEnabled])
+
+  if (loading) {
+    return <div className="animate-pulse text-center text-stone-400 py-12 text-sm">Cargando resumen...</div>
+  }
+
+  if (!stats) {
+    return <p className="text-center text-stone-400 py-12 text-sm">No se pudo cargar el resumen.</p>
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Grid de 3 columnas para pantallas grandes, 1 columna en móvil */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Columna Izquierda (2/3 de ancho en LG): Stats y Accesos Rápidos */}
+        <div className="lg:col-span-2 space-y-6">
+          
+          {/* Tarjetas de Stats */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-stone-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-1.5 text-stone-400 mb-1">
+                <Receipt size={14} className="text-emerald-500" />
+                <p className="text-[10px] uppercase tracking-widest font-bold">Ventas de hoy</p>
+              </div>
+              <p className="text-2xl font-bold text-[#0D261C]">${stats.todayRevenue.toFixed(0)}</p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-stone-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-1.5 text-stone-400 mb-1">
+                <ShoppingBag size={14} className="text-[#D4AF37]" />
+                <p className="text-[10px] uppercase tracking-widest font-bold">Pedidos de hoy</p>
+              </div>
+              <p className="text-2xl font-bold text-[#0D261C]">{stats.todayOrders}</p>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-stone-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-1.5 text-stone-400 mb-1">
+                <ClipboardList size={14} className="text-blue-500" />
+                <p className="text-[10px] uppercase tracking-widest font-bold">Pedidos activos</p>
+              </div>
+              <p className="text-2xl font-bold text-[#0D261C]">{stats.activeOrders}</p>
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-stone-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-1.5 text-stone-400 mb-1">
+                <TrendingUp size={14} className="text-purple-500" />
+                <p className="text-[10px] uppercase tracking-widest font-bold">Ticket promedio</p>
+              </div>
+              <p className="text-2xl font-bold text-[#0D261C]">${stats.averageTicket.toFixed(0)}</p>
+            </div>
+          </div>
+
+          {/* Accesos rápidos */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-stone-100">
+            <h3 className="font-serif font-bold text-[#0D261C] mb-4 text-base tracking-wide">Panel de Control</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <Link
+                href="/pedidos"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#0D261C] text-white font-bold text-sm hover:bg-[#153a2b] transition-all active:scale-95 hover:shadow-[0_0_15px_rgba(13,38,28,0.2)]"
+              >
+                <ClipboardList size={16} /> Pedidos
+              </Link>
+              <Link
+                href="/cocina"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <ChefHat size={16} /> Cocina
+              </Link>
+              <Link
+                href="/mesas"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <QrCode size={16} /> Mesas
+              </Link>
+              <Link
+                href="/reservaciones"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <CalendarDays size={16} /> Reservaciones
+              </Link>
+              <Link
+                href="/caja"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <Receipt size={16} /> Corte de caja
+              </Link>
+              <Link
+                href="/gastos"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <TrendingDown size={16} /> Gastos
+              </Link>
+              <Link
+                href="/reportes"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <TrendingUp size={16} /> Reportes
+              </Link>
+              <Link
+                href="/clientes"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <Users size={16} /> Clientes
+              </Link>
+              <Link
+                href="/facturacion"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <FileText size={16} /> Facturación
+              </Link>
+              <Link
+                href="/inventario"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <Package size={16} /> Inventario
+              </Link>
+              <Link
+                href="/cupones"
+                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-stone-200 text-stone-600 font-bold text-sm hover:bg-stone-50 hover:border-stone-300 transition-all active:scale-95"
+              >
+                <Ticket size={16} /> Cupones
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Columna Derecha (1/3 de ancho en LG): Notificaciones y Productos más vendidos */}
+        <div className="space-y-6">
+          
+          {/* Tarjeta de Notificaciones en Tiempo Real */}
+          <div className="bg-[#0D261C] text-white rounded-3xl p-6 shadow-lg border border-white/5 relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#D4AF37]/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <Bell size={18} className="text-[#D4AF37] animate-pulse" />
+                <h3 className="font-serif font-bold text-white text-base">Notificaciones</h3>
+              </div>
+              <button
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className="p-1.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                title={soundEnabled ? "Silenciar" : "Activar sonido"}
+              >
+                {soundEnabled ? <Volume2 size={15} className="text-[#D4AF37]" /> : <VolumeX size={15} className="text-stone-400" />}
+              </button>
+            </div>
+
+            <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+              {notifications.length === 0 ? (
+                <div className="text-center py-10 text-stone-400 text-xs flex flex-col items-center justify-center gap-2">
+                  <Bell size={24} className="opacity-20 text-white" />
+                  <p>Sin novedades por ahora</p>
+                </div>
+              ) : (
+                notifications.map((n) => (
+                  <Link
+                    key={n.id}
+                    href={n.link}
+                    className="block bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl p-3 transition-all hover:scale-[1.01]"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm text-white truncate">{n.title}</p>
+                        <p className="text-xs text-stone-300 truncate mt-0.5">{n.description}</p>
+                      </div>
+                      <span className="text-[10px] text-stone-400 font-medium shrink-0 ml-2">
+                        {n.time.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                  </Link>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Productos más vendidos hoy */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-stone-100">
+            <h3 className="font-serif font-bold text-[#0D261C] mb-4 text-base">Más vendidos hoy</h3>
+            {stats.topProducts.length === 0 ? (
+              <p className="text-xs text-stone-400 py-6 text-center">Aún no hay ventas hoy.</p>
+            ) : (
+              <ul className="space-y-3">
+                {stats.topProducts.map((p, i) => (
+                  <li key={p.name} className="flex items-center justify-between text-sm">
+                    <span className="text-stone-700 min-w-0 truncate">
+                      <span className="text-stone-300 font-bold mr-2">{i + 1}.</span>
+                      {p.name}
+                    </span>
+                    <span className="font-bold text-[#D4AF37] bg-[#D4AF37]/5 px-2 py-0.5 rounded-full text-xs shrink-0 ml-2">
+                      {p.quantity} pzas
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+        </div>
+      </div>
     </div>
   )
 }

@@ -307,8 +307,6 @@ export const DEFAULT_MENU: MenuData = {
   },
 }
 
-// ---------------------------------------------------------------------------
-//  Contraseña del panel de administración.
-//  ⚠️ CAMBIA ESTA CONTRASEÑA por una que solo la jefa conozca.
-// ---------------------------------------------------------------------------
-export const ADMIN_PASSWORD = "mariabela2026"
+// El acceso al panel de administración ahora se gestiona con autenticación
+// real de Supabase (email + contraseña) y roles. Ya NO hay contraseña
+// hardcodeada aquí. Ver: app/login, app/admin/layout.tsx y lib/services/auth.ts.
