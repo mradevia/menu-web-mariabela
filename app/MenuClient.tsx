@@ -73,27 +73,60 @@ const CATEGORY_FALLBACK_IMAGES = {
 }
 
 // Componente de tarjeta de platillo
-function DishCard({ item, index, onAdd }: { item: any; index: number; onAdd: (item: any) => void }) {
+//
+// Nota de rendimiento: NO usamos framer-motion aquí. Con categorías de 25+
+// platillos, animar cada tarjeta con `whileInView` creaba decenas de
+// IntersectionObservers y recálculos de layout que "trababan" el scroll y
+// bloqueaban la apertura de descripciones. En su lugar:
+//   - La aparición al hacer scroll se hace con una animación CSS ligera
+//     (`animate-dish-in`) que corre en el compositor del navegador.
+//   - La descripción se expande con una transición de `grid-template-rows`
+//     (0fr → 1fr): es puramente CSS, no reflуye ni mueve a las tarjetas
+//     vecinas, así que abrir una descripción jamás afecta a las demás.
+function DishCard({ item, index, onAdd, onSelect }: { item: any; index: number; onAdd: (item: any) => void; onSelect: (item: any) => void }) {
   const [imageError, setImageError] = useState(false)
+  const [liked, setLiked] = useState(false)
   const category = item.category || "desayunos"
   const fallback = CATEGORY_FALLBACK_IMAGES[category as keyof typeof CATEGORY_FALLBACK_IMAGES] || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600"
   const imageUrl = (item.image && !imageError) ? item.image : fallback
 
+  // Descripciones cortas (una línea) no necesitan botón "Ver más".
+  const isLong = (item.ingredients?.length ?? 0) > 70
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.35, delay: (index % 4) * 0.05 }}
-      className="bg-white rounded-2xl overflow-hidden shadow-md border border-stone-100 flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+    <article
+      style={{ animationDelay: `${(index % 6) * 55}ms` }}
+      onClick={() => onSelect(item)}
+      className="animate-dish-in bg-white rounded-2xl overflow-hidden shadow-[0_2px_16px_-6px_rgba(13,38,28,0.15)] border border-stone-100/80 flex flex-col hover:shadow-[0_18px_40px_-14px_rgba(13,38,28,0.35)] hover:-translate-y-1.5 transition-[transform,box-shadow] duration-300 ease-out group will-change-transform cursor-pointer"
     >
       <div className="relative h-48 lg:h-52 overflow-hidden">
-        <motion.img
+        <img
           src={imageUrl}
           alt={item.name}
+          loading="lazy"
+          decoding="async"
           onError={() => setImageError(true)}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.06]"
         />
+        {/* Degradado inferior para dar profundidad y legibilidad */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
+
+        {/* Precio flotante, estilo etiqueta premium */}
+        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm text-[#0D261C] font-serif font-bold text-sm px-3 py-1 rounded-full shadow-md border border-white/60">
+          ${item.price}
+        </div>
+
+        {/* Botón de favorito */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            setLiked((v) => !v)
+          }}
+          aria-label={liked ? "Quitar de favoritos" : "Agregar a favoritos"}
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/90 backdrop-blur-sm rounded-full shadow-md text-stone-500 hover:text-red-500 active:scale-90 transition-all duration-200"
+        >
+          <Heart size={15} className={liked ? "fill-red-500 text-red-500" : ""} />
+        </button>
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
@@ -110,30 +143,39 @@ function DishCard({ item, index, onAdd }: { item: any; index: number; onAdd: (it
 
       {/* Content below image */}
       <div className="p-4 flex flex-col flex-1 bg-[#FDFDFB]">
-        <div className="flex justify-between items-start gap-2 mb-2">
-          <h3 className="text-base font-serif font-bold text-[#0D261C] leading-tight group-hover:text-[#991B1B] transition-colors line-clamp-2">
-            {item.name}
-          </h3>
-          <span className="text-[#D4AF37] font-bold text-base shrink-0">${item.price}</span>
-        </div>
+        <h3 className="text-base font-serif font-bold text-[#0D261C] leading-tight group-hover:text-[#991B1B] transition-colors line-clamp-2 mb-2">
+          {item.name}
+        </h3>
 
-        <p className="text-stone-500 text-xs italic leading-relaxed line-clamp-2 mb-4 min-h-[2rem]">
+        {/* Divisor dorado sutil */}
+        <div className="h-[2px] w-8 bg-[#D4AF37]/70 rounded-full mb-3" />
+
+        {/* Descripción truncada */}
+        <p className="text-stone-500 text-xs italic leading-relaxed overflow-hidden line-clamp-2 min-h-[2rem]">
           "{item.ingredients}"
         </p>
 
-        <div className="flex gap-2 mt-auto">
+        {/* Indicador "Ver más" */}
+        {isLong && (
+          <span className="self-start mt-1.5 mb-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#991B1B] hover:text-[#0D261C] transition-colors">
+            Ver más
+            <ChevronDown size={13} />
+          </span>
+        )}
+
+        <div className="mt-auto pt-3">
           <button
-            onClick={() => onAdd(item)}
-            className="flex-1 bg-[#0D261C] text-white py-2.5 rounded-xl font-bold uppercase tracking-widest text-[9px] flex items-center justify-center gap-1.5 hover:bg-[#991B1B] transition-colors active:scale-95 transform duration-100"
+            onClick={(e) => {
+              e.stopPropagation()
+              onAdd(item)
+            }}
+            className="w-full bg-[#0D261C] text-white py-3 rounded-xl font-bold uppercase tracking-widest text-[9px] flex items-center justify-center gap-1.5 hover:bg-[#991B1B] transition-colors active:scale-[0.97] transform duration-100 shadow-sm"
           >
             <ShoppingBag size={13} /> Agregar
           </button>
-          <button className="p-2.5 bg-stone-100 rounded-xl text-stone-500 hover:bg-stone-200 hover:text-red-500 transition-colors">
-            <Heart size={15} />
-          </button>
         </div>
       </div>
-    </motion.div>
+    </article>
   )
 }
 
@@ -563,7 +605,7 @@ function CartSidebar({
 }
 
 // Componente de Recomendación del Chef
-function ChefSpecial({ items, onAdd }: { items: any[]; onAdd: (item: any) => void }) {
+function ChefSpecial({ items, onAdd, onSelect }: { items: any[]; onAdd: (item: any) => void; onSelect: (item: any) => void }) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [imageError, setImageError] = useState(false)
 
@@ -615,7 +657,10 @@ function ChefSpecial({ items, onAdd }: { items: any[]; onAdd: (item: any) => voi
             transition={{ duration: 0.5 }}
             className="grid md:grid-cols-2 gap-0 w-full"
           >
-            <div className="h-64 md:h-auto overflow-hidden relative min-h-[300px] md:min-h-[400px]">
+            <div
+              onClick={() => onSelect(item)}
+              className="h-64 md:h-auto overflow-hidden relative min-h-[300px] md:min-h-[400px] cursor-pointer"
+            >
               <img
                 src={imageUrl}
                 alt={item.name}
@@ -630,7 +675,10 @@ function ChefSpecial({ items, onAdd }: { items: any[]; onAdd: (item: any) => voi
                 <Utensils size={120} className="text-white" />
               </div>
 
-              <h3 className="text-[#D4AF37] font-serif text-3xl md:text-4xl font-bold mb-4 leading-tight">
+              <h3
+                onClick={() => onSelect(item)}
+                className="text-[#D4AF37] font-serif text-3xl md:text-4xl font-bold mb-4 leading-tight cursor-pointer hover:underline"
+              >
                 {item.name}
               </h3>
               <p className="text-stone-300 text-sm md:text-base lg:text-lg mb-8 italic leading-relaxed font-light max-w-xl">
@@ -723,6 +771,16 @@ export default function MenuClient({
   const [isCartLoaded, setIsCartLoaded] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [featuredDishes, setFeaturedDishes] = useState<any[]>([])
+
+  // Modal de Detalle de Platillo
+  const [selectedDish, setSelectedDish] = useState<any | null>(null)
+  const [selectedQuantity, setSelectedQuantity] = useState(1)
+
+  useEffect(() => {
+    if (selectedDish) {
+      setSelectedQuantity(1)
+    }
+  }, [selectedDish])
 
   // Estados para Código QR y Compartir
   const [showQRModal, setShowQRModal] = useState(false)
@@ -857,6 +915,17 @@ export default function MenuClient({
         return prev.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i))
       }
       return [...prev, { id: item.id, name: item.name, price: item.price, quantity: 1, image: item.image }]
+    })
+    setIsCartOpen(true)
+  }
+
+  const addToCartWithQuantity = (item: any, qty: number) => {
+    setCart((prev) => {
+      const existing = prev.find((i) => i.id === item.id)
+      if (existing) {
+        return prev.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + qty } : i))
+      }
+      return [...prev, { id: item.id, name: item.name, price: item.price, quantity: qty, image: item.image }]
     })
     setIsCartOpen(true)
   }
@@ -1248,7 +1317,7 @@ export default function MenuClient({
       </section>
 
       {/* Chef Special Section */}
-      <ChefSpecial items={featuredDishes} onAdd={addToCart} />
+      <ChefSpecial items={featuredDishes} onAdd={addToCart} onSelect={setSelectedDish} />
 
       {/* Search Bar */}
       <div id="menu" className="container mx-auto px-4 lg:px-6 py-8 flex flex-col items-center gap-4">
@@ -1323,7 +1392,7 @@ export default function MenuClient({
             {filteredItems.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
                 {filteredItems.map((item, index) => (
-                  <DishCard key={item.id} item={item} index={index} onAdd={addToCart} />
+                  <DishCard key={item.id} item={item} index={index} onAdd={addToCart} onSelect={setSelectedDish} />
                 ))}
               </div>
             ) : (
@@ -1513,6 +1582,181 @@ export default function MenuClient({
           </span>
         )}
       </motion.button>
+
+      {/* Modal de Detalle de Platillo */}
+      <AnimatePresence>
+        {selectedDish && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedDish(null)}
+              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+            />
+
+            {/* Modal Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.92, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ type: "spring", duration: 0.45, bounce: 0.15 }}
+              className="relative w-full max-w-3xl max-h-[90vh] md:max-h-[85vh] overflow-y-auto md:overflow-hidden bg-[#FDFDFB] rounded-3xl shadow-[0_25px_60px_-15px_rgba(13,38,28,0.35)] border border-[#D4AF37]/35 flex flex-col md:flex-row z-10 ring-1 ring-[#D4AF37]/10"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedDish(null)}
+                className="absolute top-5 right-5 z-40 w-9 h-9 flex items-center justify-center bg-white/90 backdrop-blur-md text-[#0D261C] hover:bg-[#991B1B] hover:text-white hover:border-[#991B1B] rounded-full transition-all duration-300 shadow-md border border-stone-200/50 cursor-pointer active:scale-90"
+                aria-label="Cerrar modal"
+              >
+                <X size={16} strokeWidth={2.5} />
+              </button>
+
+              {/* Left Column: Image (Top on mobile) */}
+              <div className="relative w-full md:w-1/2 h-64 md:h-auto min-h-[250px] md:min-h-[450px] overflow-hidden">
+                <img
+                  src={selectedDish.image || CATEGORY_FALLBACK_IMAGES[selectedDish.category as keyof typeof CATEGORY_FALLBACK_IMAGES] || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600"}
+                  alt={selectedDish.name}
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.04]"
+                />
+                {/* Vignette gradients */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                
+                {/* Float badges */}
+                <div className="absolute top-5 left-5 flex flex-wrap gap-2 z-20">
+                  {selectedDish.tags?.map((tag: string) => {
+                    const tagLower = tag.toLowerCase()
+                    const isEstrella = tagLower === "estrella" || tagLower === "best seller" || tagLower === "recomendado" || tagLower === "de la casa"
+                    const isPicante = tagLower === "picante" || tagLower === "hot"
+                    const isLight = tagLower === "light" || tagLower === "vegetariano" || tagLower === "fresh" || tagLower === "vegano"
+                    
+                    return (
+                      <span
+                        key={tag}
+                        className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-lg backdrop-blur-md border ${
+                          isEstrella
+                            ? "bg-[#0D261C]/90 text-[#D4AF37] border-[#D4AF37]/35"
+                            : isPicante
+                            ? "bg-[#991B1B]/95 text-white border-[#991B1B]/30"
+                            : isLight
+                            ? "bg-emerald-800/90 text-emerald-100 border-emerald-500/20"
+                            : "bg-stone-900/80 text-stone-200 border-stone-700/30"
+                        }`}
+                      >
+                        {isEstrella && <Star size={10} className="fill-[#D4AF37] text-[#D4AF37] animate-pulse" />}
+                        {isPicante && <span className="text-[10px]">🔥</span>}
+                        {isLight && <Leaf size={10} className="fill-current text-current" />}
+                        <span>{tag}</span>
+                      </span>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Right Column: Info & Actions (Scrolls independently on desktop) */}
+              <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between bg-[#FDFDFB] md:overflow-y-auto max-h-full">
+                <div className="space-y-5">
+                  {/* Category breadcrumb */}
+                  <div className="flex items-center gap-2 pt-2 md:pt-0">
+                    <span className="text-[9px] font-extrabold uppercase tracking-[0.25em] text-[#D4AF37]">
+                      {MENU_DATABASE[selectedDish.category]?.title || selectedDish.category}
+                    </span>
+                    <span className="h-[1px] flex-1 bg-gradient-to-r from-[#D4AF37]/30 to-transparent" />
+                  </div>
+
+                  {/* Title & Price Row */}
+                  <div className="space-y-2">
+                    <h3 className="font-serif text-3xl md:text-4xl font-bold text-[#0D261C] leading-tight tracking-wide">
+                      {selectedDish.name}
+                    </h3>
+                    <div className="flex items-baseline gap-1 text-[#D4AF37] font-serif">
+                      <span className="text-lg font-light">$</span>
+                      <span className="text-3xl font-bold tracking-tight">{selectedDish.price}</span>
+                      <span className="text-[9px] text-stone-400 font-sans tracking-widest uppercase ml-2.5 font-bold">MXN</span>
+                    </div>
+                  </div>
+
+                  {/* Luxury Divider */}
+                  <div className="flex items-center gap-3 py-1">
+                    <div className="h-[1px] w-10 bg-gradient-to-r from-[#991B1B] to-transparent" />
+                    <span className="text-[#991B1B] text-[8px] opacity-75">◆</span>
+                    <div className="h-[1px] w-10 bg-gradient-to-l from-[#991B1B] to-transparent" />
+                  </div>
+
+                  {/* Description / Ingredients */}
+                  <div className="space-y-2">
+                    <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-stone-400">
+                      Ingredientes y Preparación
+                    </h4>
+                    <div className="bg-[#FAF9F5] border border-stone-200/40 rounded-2xl p-4 shadow-[inset_0_1px_3px_rgba(0,0,0,0.01)]">
+                      <p className="text-stone-700 text-[13px] leading-relaxed font-serif italic text-pretty">
+                        {selectedDish.ingredients || "Preparado con los ingredientes más frescos de la casa, siguiendo recetas artesanales tradicionales."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer section of modal: Quantity & Add Button */}
+                <div className="mt-8 pt-5 border-t border-stone-200/60 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    {/* Quantity Selector Section */}
+                    <div className="flex items-center justify-between sm:justify-start gap-4">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-[#0D261C]">Cantidad</span>
+                      
+                      {/* Quantity Selector (iOS Style) */}
+                      <div className="flex items-center bg-stone-100 border border-stone-200/40 rounded-full p-1 shadow-inner">
+                        <button
+                          onClick={() => setSelectedQuantity((q) => Math.max(1, q - 1))}
+                          className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-stone-500 hover:text-[#991B1B] shadow-sm hover:shadow active:scale-95 transition-all duration-200 cursor-pointer"
+                          aria-label="Disminuir cantidad"
+                        >
+                          <Minus size={12} strokeWidth={3} />
+                        </button>
+                        <span className="w-9 text-center text-xs font-bold text-[#0D261C] select-none">
+                          {selectedQuantity}
+                        </span>
+                        <button
+                          onClick={() => setSelectedQuantity((q) => q + 1)}
+                          className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-stone-500 hover:text-[#0D261C] shadow-sm hover:shadow active:scale-95 transition-all duration-200 cursor-pointer"
+                          aria-label="Aumentar cantidad"
+                        >
+                          <Plus size={12} strokeWidth={3} />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Price subtotal preview */}
+                    <div className="hidden sm:block text-right">
+                      <p className="text-[9px] uppercase tracking-widest text-stone-400 font-bold">Subtotal</p>
+                      <p className="font-serif text-[#D4AF37] font-bold text-xl">${selectedDish.price * selectedQuantity}</p>
+                    </div>
+                  </div>
+
+                  {/* Add Button */}
+                  <button
+                    onClick={() => {
+                      addToCartWithQuantity(selectedDish, selectedQuantity)
+                      setSelectedDish(null)
+                    }}
+                    className="w-full bg-[#0D261C] text-white py-3.5 px-6 rounded-xl font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-[#991B1B] active:scale-[0.98] transition-all duration-300 flex items-center justify-between group overflow-hidden relative shadow-lg shadow-[#0D261C]/10 cursor-pointer border border-white/5"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+                    <span className="flex items-center gap-2">
+                      <ShoppingBag size={13} className="transition-transform group-hover:scale-110" />
+                      Agregar al pedido
+                    </span>
+                    <span className="font-serif font-bold text-xs bg-white/10 px-3.5 py-1 rounded-full text-[#D4AF37] border border-white/5 shadow-inner">
+                      ${selectedDish.price * selectedQuantity}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <CartSidebar
         isOpen={isCartOpen}

@@ -139,3 +139,38 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/*
+ * Aparición de las tarjetas de platillo al hacer scroll.
+ * Reemplaza a las animaciones por-tarjeta de framer-motion (whileInView),
+ * que con categorías de 25+ platillos trababan el scroll. Esta versión
+ * corre en el compositor del navegador (transform + opacity) y es muy fluida.
+ */
+@keyframes dish-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-dish-in {
+  animation: dish-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Brillo del botón "Confirmar Pedido" del carrito. */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Respetamos la preferencia de "reducir movimiento" del sistema. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-dish-in {
+    animation: none;
+  }
+}
