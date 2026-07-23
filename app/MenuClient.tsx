@@ -32,6 +32,10 @@ import {
   Share2,
   Copy,
   Check,
+  Coffee,
+  Sparkles,
+  Calendar,
+  Receipt,
 } from "lucide-react"
 import confetti from "canvas-confetti"
 import QRCode from "qrcode"
@@ -57,20 +61,21 @@ interface CartItem {
 
 // Componente de tarjeta de platillo
 const CATEGORY_FALLBACK_IMAGES = {
-  desayunos: "https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=600",
-  entradas: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=600",
-  ensaladas: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=600",
-  sopas: "https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=600",
-  paninis: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600",
-  pastas: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?q=80&w=600",
-  pizzas: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=600",
-  especialidades: "https://images.unsplash.com/photo-1625944230945-1b7dd3b949ab?q=80&w=600",
-  cortes: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=600",
-  bebidas: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=600",
-  calientes: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=600",
-  postres: "https://images.unsplash.com/photo-1488900128323-21503983a07e?q=80&w=600",
-  infantil: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=600",
+  desayunos: "/IMAGENES/1.png",
+  entradas: "/IMAGENES/2.png",
+  ensaladas: "/IMAGENES/3.png",
+  sopas: "/IMAGENES/4.png",
+  paninis: "/IMAGENES/5.png",
+  pastas: "/IMAGENES/6.png",
+  pizzas: "/IMAGENES/7.png",
+  especialidades: "/IMAGENES/8.png",
+  cortes: "/IMAGENES/9.png",
+  bebidas: "/IMAGENES/2.png",
+  calientes: "/IMAGENES/1.png",
+  postres: "/IMAGENES/8.png",
+  infantil: "/IMAGENES/5.png",
 }
+
 
 // Componente de tarjeta de platillo
 //
@@ -207,6 +212,54 @@ function SectionHeader({
         <div className="h-[2px] w-10 bg-[#991B1B]" />
       </div>
     </motion.div>
+  )
+}
+
+// Ancla estable para saltar a una subsección ("Panes & Sándwiches" -> "grupo-panes-sandwiches").
+const groupAnchorId = (title: string) =>
+  "grupo-" +
+  title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // quita acentos
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+
+// Subtítulo de una subsección dentro de una categoría (Huevos, Coctelería…),
+// tal como aparece en la carta impresa.
+function GroupHeader({ title, id }: { title: string; id: string }) {
+  return (
+    <motion.div
+      id={id}
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.3 }}
+      // scroll-mt deja aire para el header + tabs pegajosos al saltar aquí.
+      className="flex items-center gap-4 mb-6 mt-4 scroll-mt-[150px] md:scroll-mt-[190px]"
+    >
+      <h3 className="font-serif text-2xl md:text-3xl font-bold text-[#0D261C] uppercase tracking-tight whitespace-nowrap">
+        {title}
+      </h3>
+      <div className="h-[2px] flex-1 bg-gradient-to-r from-[#D4AF37] to-transparent" />
+    </motion.div>
+  )
+}
+
+// Índice de subsecciones: permite saltar dentro de una categoría larga.
+function GroupNav({ groups, onJump }: { groups: string[]; onJump: (title: string) => void }) {
+  return (
+    <div className="flex flex-wrap justify-center gap-2 mb-10 -mt-4 px-4">
+      {groups.map((g) => (
+        <button
+          key={g}
+          onClick={() => onJump(g)}
+          className="px-3.5 py-1.5 rounded-full border border-stone-200 bg-white text-stone-600 text-[11px] font-bold uppercase tracking-widest hover:border-[#D4AF37] hover:text-[#0D261C] hover:bg-[#D4AF37]/5 transition-colors cursor-pointer"
+        >
+          {g}
+        </button>
+      ))}
+    </div>
   )
 }
 
@@ -604,6 +657,74 @@ function CartSidebar({
   )
 }
 
+function AboutUs() {
+  return (
+    <section className="py-20 md:py-32 bg-stone-50 overflow-hidden relative">
+      <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#0D261C] to-transparent z-10 opacity-5" />
+      <div className="container mx-auto px-4 lg:px-8 relative z-20">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full lg:w-5/12 flex flex-col gap-6"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-[1px] w-12 bg-[#D4AF37]" />
+              <span className="text-[#D4AF37] font-bold tracking-[0.2em] text-xs uppercase">Conócenos</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl text-[#0D261C] leading-[1.1] font-serif">
+              Nuestra <br/><span className="italic text-[#D4AF37]">Historia</span>
+            </h2>
+            <p className="text-stone-600 leading-relaxed text-sm md:text-base mt-2">
+              En Maria Bela, cada platillo es una celebración de los sabores auténticos y la pasión por la gastronomía. 
+              Nuestro espacio está diseñado para brindarte una experiencia cálida, elegante y memorable.
+              Descubre un rincón donde la tradición y la innovación se encuentran en cada detalle de nuestro restaurante, creando el ambiente perfecto para ti.
+            </p>
+          </motion.div>
+          <div className="w-full lg:w-7/12">
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex flex-col gap-4 md:gap-6 pt-12"
+              >
+                <div className="rounded-3xl overflow-hidden shadow-2xl relative group aspect-[4/5]">
+                  <img src="/IMAGENES/1.png" alt="Restaurante 1" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                </div>
+                <div className="rounded-3xl overflow-hidden shadow-2xl relative group aspect-square">
+                  <img src="/IMAGENES/4.png" alt="Restaurante 2" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                </div>
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="flex flex-col gap-4 md:gap-6"
+              >
+                <div className="rounded-3xl overflow-hidden shadow-2xl relative group aspect-square">
+                  <img src="/IMAGENES/5.png" alt="Restaurante 3" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                </div>
+                <div className="rounded-3xl overflow-hidden shadow-2xl relative group aspect-[4/5]">
+                  <img src="/IMAGENES/2.png" alt="Restaurante 4" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // Componente de Recomendación del Chef
 function ChefSpecial({ items, onAdd, onSelect }: { items: any[]; onAdd: (item: any) => void; onSelect: (item: any) => void }) {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -718,11 +839,17 @@ function ChefSpecial({ items, onAdd, onSelect }: { items: any[]; onAdd: (item: a
 }
 
 const HERO_IMAGES = [
-  "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1600",
-  "https://images.unsplash.com/photo-1579684947550-22e945225d9a?q=80&w=1600",
-  "https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?q=80&w=1600",
-  "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1600",
+  "/IMAGENES/1.png",
+  "/IMAGENES/2.png",
+  "/IMAGENES/3.png",
+  "/IMAGENES/4.png",
+  "/IMAGENES/5.png",
+  "/IMAGENES/6.png",
+  "/IMAGENES/7.png",
+  "/IMAGENES/8.png",
+  "/IMAGENES/9.png",
 ]
+
 
 const heroContainerVariants = {
   hidden: { opacity: 0 },
@@ -908,6 +1035,30 @@ export default function MenuClient({
     }
   }, [activeTab, searchTerm, MENU_DATABASE])
 
+  // Parte la categoría en las subsecciones de la carta (Huevos, Omelettes…).
+  // Agrupa platillos CONTIGUOS con el mismo `group`; los que no tienen `group`
+  // forman un bloque sin subtítulo. Al buscar no se agrupa: los resultados
+  // vienen de varias categorías y los subtítulos no tendrían sentido.
+  const groupedItems = useMemo(() => {
+    const bloques: { title: string | null; items: typeof filteredItems }[] = []
+    for (const item of filteredItems) {
+      const title = searchTerm ? null : item.group ?? null
+      const ultimo = bloques[bloques.length - 1]
+      if (ultimo && ultimo.title === title) ultimo.items.push(item)
+      else bloques.push({ title, items: [item] })
+    }
+    return bloques
+  }, [filteredItems, searchTerm])
+
+  const groupNames = useMemo(
+    () => groupedItems.map((b) => b.title).filter((t): t is string => Boolean(t)),
+    [groupedItems],
+  )
+
+  const jumpToGroup = (title: string) => {
+    document.getElementById(groupAnchorId(title))?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
   const addToCart = (item: any) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id)
@@ -1003,13 +1154,11 @@ export default function MenuClient({
 
       {/* Hero Section */}
       <section className="relative min-h-screen md:h-screen py-20 md:py-0 flex items-center justify-center overflow-hidden bg-[#0D261C]">
-        {/* Subtle grid texture overlay */}
+
+        {/* Ambient warm glow in center */}
         <div 
-          className="absolute inset-0 z-2 pointer-events-none opacity-[0.035]" 
-          style={{
-            backgroundImage: `radial-gradient(circle, white 1.2px, transparent 1.2px)`,
-            backgroundSize: "28px 28px"
-          }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] md:w-[550px] md:h-[550px] rounded-full bg-gradient-to-tr from-[#D4AF37]/10 via-[#D4AF37]/5 to-transparent blur-[80px] md:blur-[130px] pointer-events-none z-1 animate-pulse" 
+          style={{ animationDuration: '8s' }} 
         />
 
         {/* Background Slider */}
@@ -1028,14 +1177,16 @@ export default function MenuClient({
             >
               <img
                 src={HERO_IMAGES[currentHeroIndex]}
-                className="w-full h-full object-cover opacity-45"
+                className="w-full h-full object-cover opacity-75"
                 alt="Maria Bela Ambience"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0D261C] via-transparent to-[#0D261C]/50" />
-              <div className="absolute inset-0 bg-black/25" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0D261C]/80 via-black/40 to-black/30" />
             </motion.div>
           </AnimatePresence>
         </div>
+
+        {/* Dark Radial Vignette overlay to isolate the content */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.1)_0%,rgba(13,38,28,0.7)_80%,#0D261C_100%)] z-1 pointer-events-none" />
 
         {/* Floating Social Sidebar (Desktop Only) */}
         <motion.div
@@ -1049,7 +1200,7 @@ export default function MenuClient({
               href={settings.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-9 h-9 rounded-full border border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg group"
+              className="w-9 h-9 rounded-full border border-white/10 bg-[#0D261C]/40 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/10 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg group"
               aria-label="Visítanos en Instagram"
             >
               <Instagram size={15} className="transition-transform duration-300 group-hover:rotate-6" />
@@ -1058,7 +1209,7 @@ export default function MenuClient({
               href={settings.facebookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-9 h-9 rounded-full border border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg group"
+              className="w-9 h-9 rounded-full border border-white/10 bg-[#0D261C]/40 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/10 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg group"
               aria-label="Visítanos en Facebook"
             >
               <Facebook size={15} className="transition-transform duration-300 group-hover:rotate-6" />
@@ -1067,7 +1218,7 @@ export default function MenuClient({
               href={`https://wa.me/${settings.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-9 h-9 rounded-full border border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg group"
+              className="w-9 h-9 rounded-full border border-white/10 bg-[#0D261C]/40 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/10 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg group"
               aria-label="Escríbenos por WhatsApp"
             >
               <MessageCircle size={15} className="transition-transform duration-300 group-hover:rotate-6" />
@@ -1118,18 +1269,17 @@ export default function MenuClient({
             className="flex flex-col items-center"
           >
             {/* Top Badge */}
-            <motion.div variants={heroItemVariants} className="mb-4 sm:mb-6 flex items-center gap-4">
-              <div className="h-[1px] w-6 md:w-10 bg-gradient-to-r from-transparent to-[#D4AF37]/80" />
-              <span className="text-[#D4AF37] font-semibold uppercase tracking-[0.35em] text-[10px] md:text-xs">
+            <motion.div variants={heroItemVariants} className="mb-4 sm:mb-6 select-none">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-[#D4AF37]/35 bg-[#D4AF37]/8 text-[#D4AF37] text-[9.5px] md:text-[10.5px] font-bold uppercase tracking-[0.25em] backdrop-blur-md shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
                 Gastronomía Artesanal
               </span>
-              <div className="h-[1px] w-6 md:w-10 bg-gradient-to-l from-transparent to-[#D4AF37]/80" />
             </motion.div>
 
             {/* Logo Image */}
             <motion.div 
               variants={heroItemVariants} 
-              className="mb-4 sm:mb-5 drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] hover:scale-[1.01] transition-transform duration-500"
+              className="mb-4 sm:mb-5 drop-shadow-[0_12px_24px_rgba(0,0,0,0.55)] hover:scale-[1.01] transition-transform duration-500"
             >
               <img
                 src={BRAND_LOGO_WHITE_HERO}
@@ -1149,7 +1299,7 @@ export default function MenuClient({
             {/* Description (Hidden on mobile to save space) */}
             <motion.p
               variants={heroItemVariants}
-              className="max-w-lg mx-auto text-white/80 text-xs md:text-sm leading-relaxed mb-6 sm:mb-8 font-light tracking-wide text-balance drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)] hidden sm:block"
+              className="max-w-lg mx-auto text-white/85 text-xs md:text-sm leading-relaxed mb-6 sm:mb-8 font-light tracking-wide text-balance drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)] hidden sm:block"
             >
               Donde cada platillo cuenta una historia de tradición, pasión y sabores únicos. Una experiencia culinaria inolvidable.
             </motion.p>
@@ -1157,39 +1307,39 @@ export default function MenuClient({
             {/* Mobile/Tablet Social Links */}
             <motion.div
               variants={heroItemVariants}
-              className="flex lg:hidden items-center justify-center gap-3.5 mb-5 sm:mb-8"
+              className="flex lg:hidden items-center justify-center gap-4 mb-6 sm:mb-8"
             >
               <a
                 href={settings.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center text-white hover:text-[#D4AF37] hover:border-[#D4AF37] active:scale-90 transition-all duration-300"
+                className="w-11 h-11 rounded-full border border-white/10 bg-[#0D261C]/40 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/10 hover:scale-110 active:scale-95 transition-all duration-300 shadow-lg group hover:shadow-[0_0_15px_rgba(212,175,55,0.15)]"
                 aria-label="Instagram"
               >
-                <Instagram size={18} />
+                <Instagram size={18} className="transition-transform duration-300 group-hover:rotate-6" />
               </a>
               <a
                 href={settings.facebookUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center text-white hover:text-[#D4AF37] hover:border-[#D4AF37] active:scale-90 transition-all duration-300"
+                className="w-11 h-11 rounded-full border border-white/10 bg-[#0D261C]/40 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/10 hover:scale-110 active:scale-95 transition-all duration-300 shadow-lg group hover:shadow-[0_0_15px_rgba(212,175,55,0.15)]"
                 aria-label="Facebook"
               >
-                <Facebook size={18} />
+                <Facebook size={18} className="transition-transform duration-300 group-hover:rotate-6" />
               </a>
               <a
                 href={`https://wa.me/${settings.whatsapp}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center text-white hover:text-[#D4AF37] hover:border-[#D4AF37] active:scale-90 transition-all duration-300"
+                className="w-11 h-11 rounded-full border border-white/10 bg-[#0D261C]/40 backdrop-blur-md flex items-center justify-center text-white/80 hover:text-[#D4AF37] hover:border-[#D4AF37]/50 hover:bg-[#D4AF37]/10 hover:scale-110 active:scale-95 transition-all duration-300 shadow-lg group hover:shadow-[0_0_15px_rgba(212,175,55,0.15)]"
                 aria-label="WhatsApp"
               >
-                <MessageCircle size={18} />
+                <MessageCircle size={18} className="transition-transform duration-300 group-hover:rotate-6" />
               </a>
             </motion.div>
 
             {/* Quick Links Dashboard (Linktree style, premium look) */}
-            <div className="grid grid-cols-1 gap-2.5 w-full max-w-[280px] sm:max-w-md px-2">
+            <div className="grid grid-cols-1 gap-3 w-full max-w-[290px] sm:max-w-md px-2">
               {/* Primary: Ver Menú Completo */}
               <motion.div variants={heroItemVariants}>
                 <a
@@ -1197,80 +1347,98 @@ export default function MenuClient({
                     const menuElement = document.getElementById("menu")
                     if (menuElement) menuElement.scrollIntoView({ behavior: "smooth" })
                   }}
-                  className="bg-[#D4AF37] text-[#0D261C] py-3 px-5 sm:py-3.5 sm:px-6 rounded-xl font-bold uppercase tracking-widest text-[9px] sm:text-[10px] flex items-center justify-between shadow-lg shadow-[#D4AF37]/15 hover:bg-white hover:text-[#0D261C] transition-all duration-300 cursor-pointer group w-full"
+                  className="relative overflow-hidden bg-gradient-to-r from-[#B59410] via-[#E2C15A] to-[#B59410] text-[#0D261C] py-3.5 px-6 rounded-2xl font-extrabold uppercase tracking-[0.2em] text-[9.5px] sm:text-[10.5px] flex items-center justify-between shadow-[0_4px_20px_rgba(212,175,55,0.2)] hover:shadow-[0_8px_30px_rgba(212,175,55,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer group w-full border border-[#E2C15A]/20"
                 >
-                  <div className="flex items-center gap-2">
-                    <Utensils size={14} className="opacity-90" />
+                  {/* Shimmer sweep effect */}
+                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-[shimmer_3s_infinite]" />
+                  
+                  <div className="flex items-center gap-2.5 relative z-10">
+                    <Utensils size={14} className="opacity-95 text-[#0D261C] group-hover:rotate-12 transition-transform duration-300" />
                     <span>Menú Maria Bela</span>
                   </div>
-                  <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
+                  <ArrowRight size={13} className="transition-transform group-hover:translate-x-1.5 relative z-10" />
                 </a>
               </motion.div>
 
               {/* Grid for categories: Bebidas & Infantil */}
-              <motion.div variants={heroItemVariants} className="grid grid-cols-2 gap-2.5 w-full">
+              <motion.div variants={heroItemVariants} className="grid grid-cols-2 gap-3 w-full">
                 <a
                   onClick={() => navigateToCategory("bebidas")}
-                  className="bg-white/5 border border-white/10 text-white py-2.5 px-3.5 rounded-xl font-bold uppercase tracking-widest text-[8.5px] sm:text-[9.5px] flex items-center justify-between backdrop-blur-xs hover:bg-white hover:text-[#0D261C] hover:border-white transition-all duration-300 cursor-pointer group"
+                  className="relative overflow-hidden bg-[#0D261C]/45 border border-white/10 text-white/90 py-3.5 px-4.5 rounded-2xl font-bold uppercase tracking-[0.18em] text-[8px] sm:text-[9px] flex items-center justify-between backdrop-blur-md hover:border-[#D4AF37]/50 hover:bg-[#0D261C]/70 hover:text-white transition-all duration-300 cursor-pointer group shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_24px_rgba(212,175,55,0.06)] hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span>Menú Bebidas</span>
-                  <ArrowRight size={11} className="opacity-60 transition-transform group-hover:translate-x-0.5" />
+                  <span className="flex items-center gap-2">
+                    <Coffee size={13} className="text-[#D4AF37] opacity-90 transition-transform group-hover:scale-110" />
+                    <span>Menú Bebidas</span>
+                  </span>
+                  <ArrowRight size={11} className="text-white/40 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all duration-300" />
                 </a>
                 <a
                   onClick={() => navigateToCategory("infantil")}
-                  className="bg-white/5 border border-white/10 text-white py-2.5 px-3.5 rounded-xl font-bold uppercase tracking-widest text-[8.5px] sm:text-[9.5px] flex items-center justify-between backdrop-blur-xs hover:bg-white hover:text-[#0D261C] hover:border-white transition-all duration-300 cursor-pointer group"
+                  className="relative overflow-hidden bg-[#0D261C]/45 border border-white/10 text-white/90 py-3.5 px-4.5 rounded-2xl font-bold uppercase tracking-[0.18em] text-[8px] sm:text-[9px] flex items-center justify-between backdrop-blur-md hover:border-[#D4AF37]/50 hover:bg-[#0D261C]/70 hover:text-white transition-all duration-300 cursor-pointer group shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_24px_rgba(212,175,55,0.06)] hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span>Menú Infantil</span>
-                  <ArrowRight size={11} className="opacity-60 transition-transform group-hover:translate-x-0.5" />
+                  <span className="flex items-center gap-2">
+                    <Sparkles size={13} className="text-[#D4AF37] opacity-90 transition-transform group-hover:scale-110" />
+                    <span>Menú Infantil</span>
+                  </span>
+                  <ArrowRight size={11} className="text-white/40 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all duration-300" />
                 </a>
               </motion.div>
 
               {/* Grid for services: Reservaciones & Facturación */}
-              <motion.div variants={heroItemVariants} className="grid grid-cols-2 gap-2.5 w-full">
+              <motion.div variants={heroItemVariants} className="grid grid-cols-2 gap-3 w-full">
                 <a
                   href="/reservar"
-                  className="bg-white/5 border border-white/10 text-white py-2.5 px-3.5 rounded-xl font-bold uppercase tracking-widest text-[8.5px] sm:text-[9.5px] flex items-center justify-between backdrop-blur-xs hover:bg-white hover:text-[#0D261C] hover:border-white transition-all duration-300 cursor-pointer group"
+                  className="relative overflow-hidden bg-[#0D261C]/45 border border-white/10 text-white/90 py-3.5 px-4.5 rounded-2xl font-bold uppercase tracking-[0.18em] text-[8px] sm:text-[9px] flex items-center justify-between backdrop-blur-md hover:border-[#D4AF37]/50 hover:bg-[#0D261C]/70 hover:text-white transition-all duration-300 cursor-pointer group shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_24px_rgba(212,175,55,0.06)] hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span>Reservaciones</span>
-                  <ArrowRight size={11} className="opacity-60 transition-transform group-hover:translate-x-0.5" />
+                  <span className="flex items-center gap-2">
+                    <Calendar size={13} className="text-[#D4AF37] opacity-90 transition-transform group-hover:scale-110" />
+                    <span>Reservaciones</span>
+                  </span>
+                  <ArrowRight size={11} className="text-white/40 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all duration-300" />
                 </a>
                 <a
                   href="/facturar"
-                  className="bg-white/5 border border-white/10 text-white py-2.5 px-3.5 rounded-xl font-bold uppercase tracking-widest text-[8.5px] sm:text-[9.5px] flex items-center justify-between backdrop-blur-xs hover:bg-white hover:text-[#0D261C] hover:border-white transition-all duration-300 cursor-pointer group"
+                  className="relative overflow-hidden bg-[#0D261C]/45 border border-white/10 text-white/90 py-3.5 px-4.5 rounded-2xl font-bold uppercase tracking-[0.18em] text-[8px] sm:text-[9px] flex items-center justify-between backdrop-blur-md hover:border-[#D4AF37]/50 hover:bg-[#0D261C]/70 hover:text-white transition-all duration-300 cursor-pointer group shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_24px_rgba(212,175,55,0.06)] hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span>Facturación</span>
-                  <ArrowRight size={11} className="opacity-60 transition-transform group-hover:translate-x-0.5" />
+                  <span className="flex items-center gap-2">
+                    <Receipt size={13} className="text-[#D4AF37] opacity-90 transition-transform group-hover:scale-110" />
+                    <span>Facturación</span>
+                  </span>
+                  <ArrowRight size={11} className="text-white/40 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all duration-300" />
                 </a>
               </motion.div>
 
               {/* Grid for secondary links: PDF & Ubicación */}
-              <motion.div variants={heroItemVariants} className="grid grid-cols-2 gap-2.5 w-full">
+              <motion.div variants={heroItemVariants} className="grid grid-cols-2 gap-3 w-full">
                 <a
                   href="/MENU MARIA BELA_IMPRESION.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white/5 border border-white/10 text-white py-2.5 px-3.5 rounded-xl font-bold uppercase tracking-widest text-[8.5px] sm:text-[9.5px] flex items-center justify-between backdrop-blur-xs hover:bg-white hover:text-[#0D261C] hover:border-white transition-all duration-300 cursor-pointer group"
+                  className="relative overflow-hidden bg-[#0D261C]/45 border border-white/10 text-white/90 py-3.5 px-4.5 rounded-2xl font-bold uppercase tracking-[0.18em] text-[8px] sm:text-[9px] flex items-center justify-between backdrop-blur-md hover:border-[#D4AF37]/50 hover:bg-[#0D261C]/70 hover:text-white transition-all duration-300 cursor-pointer group shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_24px_rgba(212,175,55,0.06)] hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span className="flex items-center gap-1"><FileText size={11} className="opacity-80" /> Menú PDF</span>
-                  <ArrowRight size={11} className="opacity-60 transition-transform group-hover:translate-x-0.5" />
+                  <span className="flex items-center gap-2">
+                    <FileText size={13} className="text-[#D4AF37] opacity-90 transition-transform group-hover:scale-110" />
+                    <span>Menú PDF</span>
+                  </span>
+                  <ArrowRight size={11} className="text-white/40 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all duration-300" />
                 </a>
                 <a
                   href={settings.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white/5 border border-white/10 text-white py-2.5 px-3.5 rounded-xl font-bold uppercase tracking-widest text-[8.5px] sm:text-[9.5px] flex items-center justify-between backdrop-blur-xs hover:bg-white hover:text-[#0D261C] hover:border-white transition-all duration-300 cursor-pointer group"
+                  className="relative overflow-hidden bg-[#0D261C]/45 border border-white/10 text-white/90 py-3.5 px-4.5 rounded-2xl font-bold uppercase tracking-[0.18em] text-[8px] sm:text-[9px] flex items-center justify-between backdrop-blur-md hover:border-[#D4AF37]/50 hover:bg-[#0D261C]/70 hover:text-white transition-all duration-300 cursor-pointer group shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_24px_rgba(212,175,55,0.06)] hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-2">
                     <motion.div
                       animate={{ y: [0, -1.5, 0] }}
                       transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
                       className="inline-block"
                     >
-                      <MapPin size={11} className="opacity-80" />
+                      <MapPin size={13} className="text-[#D4AF37] opacity-90" />
                     </motion.div> 
                     Ubicación
                   </span>
-                  <ArrowRight size={11} className="opacity-60 transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRight size={11} className="text-white/40 group-hover:text-[#D4AF37] group-hover:translate-x-1 transition-all duration-300" />
                 </a>
               </motion.div>
 
@@ -1278,13 +1446,13 @@ export default function MenuClient({
               <motion.div variants={heroItemVariants} className="w-full">
                 <button
                   onClick={() => setShowQRModal(true)}
-                  className="bg-white/5 border border-white/10 text-white w-full py-2.5 px-3.5 rounded-xl font-bold uppercase tracking-widest text-[8.5px] sm:text-[9.5px] flex items-center justify-between backdrop-blur-xs hover:bg-[#D4AF37] hover:text-[#0D261C] hover:border-[#D4AF37] transition-all duration-300 cursor-pointer group"
+                  className="relative overflow-hidden bg-[#0D261C]/45 border border-white/10 text-white/90 w-full py-3.5 px-4.5 rounded-2xl font-bold uppercase tracking-[0.18em] text-[8px] sm:text-[9px] flex items-center justify-between backdrop-blur-md hover:border-[#D4AF37]/50 hover:bg-[#0D261C]/70 hover:text-white transition-all duration-300 cursor-pointer group shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_24px_rgba(212,175,55,0.06)] hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span className="flex items-center gap-1.5">
-                    <QrCode size={12} className="opacity-80 transition-transform group-hover:scale-110" />
+                  <span className="flex items-center gap-2">
+                    <QrCode size={13} className="text-[#D4AF37] opacity-90 transition-transform group-hover:scale-110" />
                     Compartir Menú (Código QR)
                   </span>
-                  <Share2 size={11} className="opacity-60 transition-transform group-hover:translate-x-0.5" />
+                  <Share2 size={11} className="text-white/40 group-hover:text-[#D4AF37] group-hover:scale-110 transition-all duration-300" />
                 </button>
               </motion.div>
             </div>
@@ -1315,6 +1483,9 @@ export default function MenuClient({
           </div>
         </motion.div>
       </section>
+
+      {/* About Us Section */}
+      <AboutUs />
 
       {/* Chef Special Section */}
       <ChefSpecial items={featuredDishes} onAdd={addToCart} onSelect={setSelectedDish} />
@@ -1390,11 +1561,19 @@ export default function MenuClient({
             />
 
             {filteredItems.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                {filteredItems.map((item, index) => (
-                  <DishCard key={item.id} item={item} index={index} onAdd={addToCart} onSelect={setSelectedDish} />
+              <>
+                {groupNames.length > 1 && <GroupNav groups={groupNames} onJump={jumpToGroup} />}
+                {groupedItems.map((bloque, i) => (
+                  <section key={bloque.title ?? `bloque-${i}`}>
+                    {bloque.title && <GroupHeader title={bloque.title} id={groupAnchorId(bloque.title)} />}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-14 last:mb-0">
+                      {bloque.items.map((item, index) => (
+                        <DishCard key={item.id} item={item} index={index} onAdd={addToCart} onSelect={setSelectedDish} />
+                      ))}
+                    </div>
+                  </section>
                 ))}
-              </div>
+              </>
             ) : (
               <div className="text-center py-20">
                 <Leaf className="mx-auto text-stone-300 mb-4" size={48} />
@@ -1586,46 +1765,52 @@ export default function MenuClient({
       {/* Modal de Detalle de Platillo */}
       <AnimatePresence>
         {selectedDish && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedDish(null)}
-              className="absolute inset-0 bg-black/70 backdrop-blur-md"
+              className="absolute inset-0 bg-black/75 backdrop-blur-md"
             />
 
             {/* Modal Card */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.92, y: 20 }}
-              transition={{ type: "spring", duration: 0.45, bounce: 0.15 }}
-              className="relative w-full max-w-3xl max-h-[90vh] md:max-h-[85vh] overflow-y-auto md:overflow-hidden bg-[#FDFDFB] rounded-3xl shadow-[0_25px_60px_-15px_rgba(13,38,28,0.35)] border border-[#D4AF37]/35 flex flex-col md:flex-row z-10 ring-1 ring-[#D4AF37]/10"
+              initial={{ opacity: 0, y: 60, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 60, scale: 0.98 }}
+              transition={{ type: "spring", damping: 25, stiffness: 220 }}
+              className="relative w-full sm:max-w-3xl lg:max-w-4xl h-[88vh] sm:h-[550px] md:h-[600px] lg:h-[650px] bg-[#FDFDFB] rounded-t-[32px] sm:rounded-[32px] shadow-[0_25px_60px_-15px_rgba(13,38,28,0.45)] border-t sm:border border-[#D4AF37]/30 flex flex-col sm:flex-row z-10 overflow-hidden ring-1 ring-[#D4AF37]/10"
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setSelectedDish(null)}
-                className="absolute top-5 right-5 z-40 w-9 h-9 flex items-center justify-center bg-white/90 backdrop-blur-md text-[#0D261C] hover:bg-[#991B1B] hover:text-white hover:border-[#991B1B] rounded-full transition-all duration-300 shadow-md border border-stone-200/50 cursor-pointer active:scale-90"
-                aria-label="Cerrar modal"
-              >
-                <X size={16} strokeWidth={2.5} />
-              </button>
-
-              {/* Left Column: Image (Top on mobile) */}
-              <div className="relative w-full md:w-1/2 h-64 md:h-auto min-h-[250px] md:min-h-[450px] overflow-hidden">
+              {/* Left/Top Column: Image */}
+              <div className="relative w-full sm:w-1/2 h-[35vh] sm:h-full shrink-0 overflow-hidden">
                 <img
                   src={selectedDish.image || CATEGORY_FALLBACK_IMAGES[selectedDish.category as keyof typeof CATEGORY_FALLBACK_IMAGES] || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600"}
                   alt={selectedDish.name}
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.04]"
+                  className="w-full h-full object-cover transition-transform duration-[800ms] hover:scale-105"
                 />
-                {/* Vignette gradients */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
                 
-                {/* Float badges */}
-                <div className="absolute top-5 left-5 flex flex-wrap gap-2 z-20">
+                {/* Vignette Gradients */}
+                {/* Top overlay to read close button & drag handle */}
+                <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/55 via-black/20 to-transparent pointer-events-none" />
+                {/* Bottom overlay for depth */}
+                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+                
+                {/* Mobile iOS-style drag handle */}
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/40 rounded-full z-40 sm:hidden" />
+
+                {/* Floating Glassmorphic Close Button */}
+                <button
+                  onClick={() => setSelectedDish(null)}
+                  className="absolute top-4 right-4 z-40 w-10 h-10 flex items-center justify-center bg-black/35 backdrop-blur-md text-white hover:bg-[#991B1B] hover:border-[#991B1B] rounded-full transition-all duration-300 shadow-lg border border-white/10 active:scale-90 hover:scale-105 cursor-pointer"
+                  aria-label="Cerrar modal"
+                >
+                  <X size={16} strokeWidth={2.5} />
+                </button>
+
+                {/* Float badges at bottom left of image */}
+                <div className="absolute bottom-4 left-4 flex flex-wrap gap-1.5 z-20">
                   {selectedDish.tags?.map((tag: string) => {
                     const tagLower = tag.toLowerCase()
                     const isEstrella = tagLower === "estrella" || tagLower === "best seller" || tagLower === "recomendado" || tagLower === "de la casa"
@@ -1635,17 +1820,17 @@ export default function MenuClient({
                     return (
                       <span
                         key={tag}
-                        className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shadow-lg backdrop-blur-md border ${
+                        className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider shadow-lg backdrop-blur-md border ${
                           isEstrella
-                            ? "bg-[#0D261C]/90 text-[#D4AF37] border-[#D4AF37]/35"
+                            ? "bg-[#0D261C]/90 text-[#D4AF37] border-[#D4AF37]/45 animate-pulse"
                             : isPicante
-                            ? "bg-[#991B1B]/95 text-white border-[#991B1B]/30"
+                            ? "bg-[#991B1B]/95 text-white border-[#991B1B]/40"
                             : isLight
-                            ? "bg-emerald-800/90 text-emerald-100 border-emerald-500/20"
+                            ? "bg-emerald-800/90 text-emerald-100 border-emerald-500/30"
                             : "bg-stone-900/80 text-stone-200 border-stone-700/30"
                         }`}
                       >
-                        {isEstrella && <Star size={10} className="fill-[#D4AF37] text-[#D4AF37] animate-pulse" />}
+                        {isEstrella && <Star size={10} className="fill-[#D4AF37] text-[#D4AF37]" />}
                         {isPicante && <span className="text-[10px]">🔥</span>}
                         {isLight && <Leaf size={10} className="fill-current text-current" />}
                         <span>{tag}</span>
@@ -1655,71 +1840,66 @@ export default function MenuClient({
                 </div>
               </div>
 
-              {/* Right Column: Info & Actions (Scrolls independently on desktop) */}
-              <div className="w-full md:w-1/2 p-6 md:p-8 flex flex-col justify-between bg-[#FDFDFB] md:overflow-y-auto max-h-full">
-                <div className="space-y-5">
+              {/* Right Column: Info & Actions */}
+              <div className="w-full sm:w-1/2 flex flex-col h-[calc(88vh-35vh)] sm:h-full bg-[#FDFDFB] overflow-hidden">
+                {/* Scrollable details container */}
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
                   {/* Category breadcrumb */}
-                  <div className="flex items-center gap-2 pt-2 md:pt-0">
-                    <span className="text-[9px] font-extrabold uppercase tracking-[0.25em] text-[#D4AF37]">
+                  <div className="flex items-center gap-2 pt-1">
+                    <span className="text-[10px] font-extrabold uppercase tracking-[0.25em] text-[#D4AF37]">
                       {MENU_DATABASE[selectedDish.category]?.title || selectedDish.category}
                     </span>
-                    <span className="h-[1px] flex-1 bg-gradient-to-r from-[#D4AF37]/30 to-transparent" />
+                    <span className="h-[1px] flex-1 bg-gradient-to-r from-[#D4AF37]/35 to-transparent" />
                   </div>
 
                   {/* Title & Price Row */}
-                  <div className="space-y-2">
-                    <h3 className="font-serif text-3xl md:text-4xl font-bold text-[#0D261C] leading-tight tracking-wide">
+                  <div className="space-y-3">
+                    <h3 className="font-serif text-3xl font-bold text-[#0D261C] leading-tight tracking-wide">
                       {selectedDish.name}
                     </h3>
                     <div className="flex items-baseline gap-1 text-[#D4AF37] font-serif">
-                      <span className="text-lg font-light">$</span>
-                      <span className="text-3xl font-bold tracking-tight">{selectedDish.price}</span>
-                      <span className="text-[9px] text-stone-400 font-sans tracking-widest uppercase ml-2.5 font-bold">MXN</span>
+                      <span className="text-xl font-light">$</span>
+                      <span className="text-3xl font-extrabold tracking-tight">{selectedDish.price}</span>
+                      <span className="text-[10px] text-stone-400 font-sans tracking-widest uppercase ml-2.5 font-bold">MXN</span>
                     </div>
                   </div>
 
-                  {/* Luxury Divider */}
-                  <div className="flex items-center gap-3 py-1">
-                    <div className="h-[1px] w-10 bg-gradient-to-r from-[#991B1B] to-transparent" />
-                    <span className="text-[#991B1B] text-[8px] opacity-75">◆</span>
-                    <div className="h-[1px] w-10 bg-gradient-to-l from-[#991B1B] to-transparent" />
-                  </div>
-
                   {/* Description / Ingredients */}
-                  <div className="space-y-2">
-                    <h4 className="text-[9px] font-bold uppercase tracking-[0.2em] text-stone-400">
+                  <div className="space-y-2.5">
+                    <h4 className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#0D261C]/50 flex items-center gap-1.5">
+                      <Utensils size={12} className="text-[#D4AF37]" />
                       Ingredientes y Preparación
                     </h4>
-                    <div className="bg-[#FAF9F5] border border-stone-200/40 rounded-2xl p-4 shadow-[inset_0_1px_3px_rgba(0,0,0,0.01)]">
-                      <p className="text-stone-700 text-[13px] leading-relaxed font-serif italic text-pretty">
+                    <div className="bg-[#FAF9F5] border border-stone-200/50 rounded-2xl p-4.5 shadow-[inset_0_1.5px_3px_rgba(0,0,0,0.025)]">
+                      <p className="text-stone-700 text-[13.5px] leading-relaxed font-serif italic text-pretty">
                         {selectedDish.ingredients || "Preparado con los ingredientes más frescos de la casa, siguiendo recetas artesanales tradicionales."}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Footer section of modal: Quantity & Add Button */}
-                <div className="mt-8 pt-5 border-t border-stone-200/60 space-y-4">
+                {/* Fixed Bottom Action Footer */}
+                <div className="p-6 border-t border-stone-200/60 bg-[#FDFDFB]/95 backdrop-blur-md sticky bottom-0 z-30 space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     {/* Quantity Selector Section */}
                     <div className="flex items-center justify-between sm:justify-start gap-4">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-[#0D261C]">Cantidad</span>
                       
                       {/* Quantity Selector (iOS Style) */}
-                      <div className="flex items-center bg-stone-100 border border-stone-200/40 rounded-full p-1 shadow-inner">
+                      <div className="flex items-center bg-stone-100/80 border border-stone-200/50 rounded-full p-1 shadow-inner">
                         <button
                           onClick={() => setSelectedQuantity((q) => Math.max(1, q - 1))}
-                          className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-stone-500 hover:text-[#991B1B] shadow-sm hover:shadow active:scale-95 transition-all duration-200 cursor-pointer"
+                          className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-[#0D261C] hover:text-[#991B1B] shadow-sm hover:shadow active:scale-90 transition-all duration-200 cursor-pointer"
                           aria-label="Disminuir cantidad"
                         >
                           <Minus size={12} strokeWidth={3} />
                         </button>
-                        <span className="w-9 text-center text-xs font-bold text-[#0D261C] select-none">
+                        <span className="w-8 text-center text-xs font-bold text-[#0D261C] select-none">
                           {selectedQuantity}
                         </span>
                         <button
                           onClick={() => setSelectedQuantity((q) => q + 1)}
-                          className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-stone-500 hover:text-[#0D261C] shadow-sm hover:shadow active:scale-95 transition-all duration-200 cursor-pointer"
+                          className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-[#0D261C] hover:text-[#0D261C] shadow-sm hover:shadow active:scale-90 transition-all duration-200 cursor-pointer"
                           aria-label="Aumentar cantidad"
                         >
                           <Plus size={12} strokeWidth={3} />
@@ -1740,14 +1920,14 @@ export default function MenuClient({
                       addToCartWithQuantity(selectedDish, selectedQuantity)
                       setSelectedDish(null)
                     }}
-                    className="w-full bg-[#0D261C] text-white py-3.5 px-6 rounded-xl font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-[#991B1B] active:scale-[0.98] transition-all duration-300 flex items-center justify-between group overflow-hidden relative shadow-lg shadow-[#0D261C]/10 cursor-pointer border border-white/5"
+                    className="w-full bg-[#0D261C] text-white py-4 px-6 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-[#991B1B] active:scale-[0.98] transition-all duration-300 flex items-center justify-between group overflow-hidden relative shadow-lg shadow-[#0D261C]/15 cursor-pointer border border-white/5"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
                     <span className="flex items-center gap-2">
-                      <ShoppingBag size={13} className="transition-transform group-hover:scale-110" />
+                      <ShoppingBag size={14} className="text-[#D4AF37] transition-transform group-hover:scale-110" />
                       Agregar al pedido
                     </span>
-                    <span className="font-serif font-bold text-xs bg-white/10 px-3.5 py-1 rounded-full text-[#D4AF37] border border-white/5 shadow-inner">
+                    <span className="font-serif font-bold text-xs bg-[#D4AF37] text-[#0D261C] px-3.5 py-1.5 rounded-xl border border-white/10 shadow-md transition-colors group-hover:bg-white group-hover:text-[#991B1B]">
                       ${selectedDish.price * selectedQuantity}
                     </span>
                   </button>

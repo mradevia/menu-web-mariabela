@@ -7,7 +7,8 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
-    "create-admin": "tsx scripts/create-admin.ts"
+    "create-admin": "tsx scripts/create-admin.ts",
+    "sync-menu": "tsx scripts/sync-menu.ts"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",

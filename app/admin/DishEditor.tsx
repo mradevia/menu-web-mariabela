@@ -10,6 +10,7 @@ import {
   Tag,
   DollarSign,
   AlignLeft,
+  LayoutList,
   RefreshCw,
   Loader2,
 } from "lucide-react"
@@ -21,14 +22,16 @@ const USE_SUPABASE = process.env.NEXT_PUBLIC_DATA_SOURCE === "supabase"
 
 interface Props {
   dish: Dish | null // null = crear nuevo
+  groups?: string[] // subsecciones que ya existen en esta categoría (sugerencias)
   onSave: (dish: Dish) => void
   onClose: () => void
 }
 
-export default function DishEditor({ dish, onSave, onClose }: Props) {
+export default function DishEditor({ dish, groups = [], onSave, onClose }: Props) {
   const [name, setName] = useState("")
   const [price, setPrice] = useState("")
   const [ingredients, setIngredients] = useState("")
+  const [group, setGroup] = useState("")
   const [image, setImage] = useState("")
   const [uploading, setUploading] = useState(false)
 
@@ -36,6 +39,7 @@ export default function DishEditor({ dish, onSave, onClose }: Props) {
     setName(dish?.name ?? "")
     setPrice(dish ? String(dish.price) : "")
     setIngredients(dish?.ingredients ?? "")
+    setGroup(dish?.group ?? "")
     setImage(dish?.image ?? "")
   }, [dish])
 
@@ -55,6 +59,7 @@ export default function DishEditor({ dish, onSave, onClose }: Props) {
       name: name.trim(),
       price: priceNum,
       ingredients: ingredients.trim(),
+      ...(group.trim() ? { group: group.trim() } : {}),
       ...(image.trim() ? { image: image.trim() } : {}),
       ...(dish?.tags ? { tags: dish.tags } : {}), // Conservamos las etiquetas existentes si las tuviera
     })
@@ -183,6 +188,30 @@ export default function DishEditor({ dish, onSave, onClose }: Props) {
                 className="w-full pl-9 p-3.5 rounded-xl border border-stone-200 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/10 outline-none text-base transition-all bg-stone-50/30 focus:bg-white font-medium"
               />
             </div>
+          </div>
+
+          {/* Subsección */}
+          <div>
+            <label className="block text-xs uppercase tracking-wider font-bold text-[#0D261C] mb-2 flex items-center gap-1.5">
+              <LayoutList size={14} className="text-[#D4AF37]" /> Subsección{" "}
+              <span className="font-normal text-stone-400 normal-case">(opcional)</span>
+            </label>
+            <input
+              value={group}
+              onChange={(e) => setGroup(e.target.value)}
+              list="subsecciones-existentes"
+              placeholder="Ej: Huevos, Omelettes, Coctelería…"
+              className="w-full p-3.5 rounded-xl border border-stone-200 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/10 outline-none text-base transition-all bg-stone-50/30 focus:bg-white"
+            />
+            <datalist id="subsecciones-existentes">
+              {groups.map((g) => (
+                <option key={g} value={g} />
+              ))}
+            </datalist>
+            <p className="text-[11px] text-stone-400 mt-1.5 leading-relaxed">
+              Agrupa el platillo bajo un subtítulo dentro de su categoría, como en la carta impresa. Déjalo vacío
+              si no pertenece a ninguna subsección. Los platillos de una misma subsección deben ir juntos en la lista.
+            </p>
           </div>
 
           {/* Descripción */}

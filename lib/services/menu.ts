@@ -42,7 +42,7 @@ export async function fetchMenu(supabase: Client): Promise<MenuData> {
 
   const { data: products, error: prodError } = await supabase
     .from("products")
-    .select("legacy_id, category_id, name, description, price, image_url, tags, sort_order")
+    .select("legacy_id, category_id, name, description, price, image_url, tags, group_name, sort_order")
     .eq("is_active", true)
     .order("sort_order", { ascending: true })
 
@@ -58,6 +58,7 @@ export async function fetchMenu(supabase: Client): Promise<MenuData> {
       ingredients: p.description ?? "",
       ...(p.tags && p.tags.length > 0 ? { tags: p.tags } : {}),
       ...(p.image_url ? { image: p.image_url } : {}),
+      ...(p.group_name ? { group: p.group_name } : {}),
     }
     const list = productsByCategory.get(p.category_id) ?? []
     list.push(dish)
@@ -140,6 +141,7 @@ export async function saveMenu(supabase: Client, menu: MenuData): Promise<void> 
     price: number
     image_url: string | null
     tags: string[]
+    group_name: string | null
     sort_order: number
     is_active: boolean
   }[] = []
@@ -159,6 +161,7 @@ export async function saveMenu(supabase: Client, menu: MenuData): Promise<void> 
         price: item.price,
         image_url: item.image ?? null,
         tags: item.tags ?? [],
+        group_name: item.group ?? null,
         sort_order: index,
         is_active: true,
       })

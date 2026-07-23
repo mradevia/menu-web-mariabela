@@ -1049,6 +1049,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          group_name: string | null
           id: string
           image_url: string | null
           is_active: boolean
@@ -1066,6 +1067,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          group_name?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -1083,6 +1085,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          group_name?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -1572,6 +1575,7 @@ export type Database = {
       has_role: { Args: { role_key: string }; Returns: boolean }
       is_admin_or_manager: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
+      order_is_pending: { Args: { p_order_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
