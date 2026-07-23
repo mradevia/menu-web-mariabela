@@ -91,9 +91,7 @@ const CATEGORY_FALLBACK_IMAGES = {
 function DishCard({ item, index, onAdd, onSelect }: { item: any; index: number; onAdd: (item: any) => void; onSelect: (item: any) => void }) {
   const [imageError, setImageError] = useState(false)
   const [liked, setLiked] = useState(false)
-  const category = item.category || "desayunos"
-  const fallback = CATEGORY_FALLBACK_IMAGES[category as keyof typeof CATEGORY_FALLBACK_IMAGES] || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600"
-  const imageUrl = (item.image && !imageError) ? item.image : fallback
+  const hasImage = !!item.image && !imageError
 
   // Descripciones cortas (una línea) no necesitan botón "Ver más".
   const isLong = (item.ingredients?.length ?? 0) > 70
@@ -104,17 +102,29 @@ function DishCard({ item, index, onAdd, onSelect }: { item: any; index: number; 
       onClick={() => onSelect(item)}
       className="animate-dish-in bg-white rounded-2xl overflow-hidden shadow-[0_2px_16px_-6px_rgba(13,38,28,0.15)] border border-stone-100/80 flex flex-col hover:shadow-[0_18px_40px_-14px_rgba(13,38,28,0.35)] hover:-translate-y-1.5 transition-[transform,box-shadow] duration-300 ease-out group will-change-transform cursor-pointer"
     >
-      <div className="relative h-48 lg:h-52 overflow-hidden">
-        <img
-          src={imageUrl}
-          alt={item.name}
-          loading="lazy"
-          decoding="async"
-          onError={() => setImageError(true)}
-          className="w-full h-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.06]"
-        />
+      <div className="relative h-48 lg:h-52 overflow-hidden bg-white">
+        {hasImage ? (
+          <img
+            src={item.image}
+            alt={item.name}
+            loading="lazy"
+            decoding="async"
+            onError={() => setImageError(true)}
+            className="w-full h-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.06]"
+          />
+        ) : (
+          <div className="w-full h-full bg-white flex items-center justify-center border-b border-stone-100">
+            <img
+              src="/brand/mariabela-logo-clear-gold-sm.png"
+              alt="Maria Bela Logo"
+              className="w-20 h-auto opacity-15 object-contain"
+            />
+          </div>
+        )}
         {/* Degradado inferior para dar profundidad y legibilidad */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
+        {hasImage && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
+        )}
 
         {/* Precio flotante, estilo etiqueta premium */}
         <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-sm text-[#0D261C] font-serif font-bold text-sm px-3 py-1 rounded-full shadow-md border border-white/60">
@@ -745,8 +755,7 @@ function ChefSpecial({ items, onAdd, onSelect }: { items: any[]; onAdd: (item: a
   if (items.length === 0) return null
 
   const item = items[currentIndex]
-  const fallbackImage = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800"
-  const imageUrl = (item.image && !imageError) ? item.image : fallbackImage
+  const hasImage = !!item.image && !imageError
 
   return (
     <motion.div
@@ -780,15 +789,27 @@ function ChefSpecial({ items, onAdd, onSelect }: { items: any[]; onAdd: (item: a
           >
             <div
               onClick={() => onSelect(item)}
-              className="h-64 md:h-auto overflow-hidden relative min-h-[300px] md:min-h-[400px] cursor-pointer"
+              className="h-64 md:h-auto overflow-hidden relative min-h-[300px] md:min-h-[400px] cursor-pointer bg-[#0D261C] flex items-center justify-center"
             >
-              <img
-                src={imageUrl}
-                alt={item.name}
-                onError={() => setImageError(true)}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0D261C] via-[#0D261C]/20 to-transparent md:hidden" />
+              {hasImage ? (
+                <>
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    onError={() => setImageError(true)}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D261C] via-[#0D261C]/20 to-transparent md:hidden" />
+                </>
+              ) : (
+                <div className="w-full h-full bg-[#05140e] flex items-center justify-center border-r border-[#D4AF37]/15">
+                  <img
+                    src="/brand/mariabela-logo-clear-gold-sm.png"
+                    alt="Maria Bela Logo"
+                    className="w-36 h-auto opacity-20 object-contain"
+                  />
+                </div>
+              )}
             </div>
             
             <div className="p-8 pb-16 md:p-12 lg:p-16 flex flex-col justify-center relative">
@@ -1784,18 +1805,30 @@ export default function MenuClient({
               className="relative w-full sm:max-w-3xl lg:max-w-4xl h-[88vh] sm:h-[550px] md:h-[600px] lg:h-[650px] bg-[#FDFDFB] rounded-t-[32px] sm:rounded-[32px] shadow-[0_25px_60px_-15px_rgba(13,38,28,0.45)] border-t sm:border border-[#D4AF37]/30 flex flex-col sm:flex-row z-10 overflow-hidden ring-1 ring-[#D4AF37]/10"
             >
               {/* Left/Top Column: Image */}
-              <div className="relative w-full sm:w-1/2 h-[35vh] sm:h-full shrink-0 overflow-hidden">
-                <img
-                  src={selectedDish.image || CATEGORY_FALLBACK_IMAGES[selectedDish.category as keyof typeof CATEGORY_FALLBACK_IMAGES] || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600"}
-                  alt={selectedDish.name}
-                  className="w-full h-full object-cover transition-transform duration-[800ms] hover:scale-105"
-                />
-                
-                {/* Vignette Gradients */}
-                {/* Top overlay to read close button & drag handle */}
-                <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/55 via-black/20 to-transparent pointer-events-none" />
-                {/* Bottom overlay for depth */}
-                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+              <div className="relative w-full sm:w-1/2 h-[35vh] sm:h-full shrink-0 overflow-hidden bg-white">
+                {selectedDish.image ? (
+                  <>
+                    <img
+                      src={selectedDish.image}
+                      alt={selectedDish.name}
+                      className="w-full h-full object-cover transition-transform duration-[800ms] hover:scale-105"
+                    />
+                    {/* Vignette Gradients */}
+                    {/* Top overlay to read close button & drag handle */}
+                    <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/55 via-black/20 to-transparent pointer-events-none" />
+                    {/* Bottom overlay for depth */}
+                    <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+                  </>
+                ) : (
+                  <div className="w-full h-full bg-white flex items-center justify-center border-r border-stone-100/60">
+                    <img
+                      src="/brand/mariabela-logo-clear-gold-sm.png"
+                      alt="Maria Bela Logo"
+                      className="w-32 h-auto opacity-15 object-contain animate-pulse"
+                      style={{ animationDuration: '4s' }}
+                    />
+                  </div>
+                )}
                 
                 {/* Mobile iOS-style drag handle */}
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/40 rounded-full z-40 sm:hidden" />
