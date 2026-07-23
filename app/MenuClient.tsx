@@ -39,6 +39,7 @@ import {
 } from "lucide-react"
 import confetti from "canvas-confetti"
 import QRCode from "qrcode"
+import SmartImage from "@/components/SmartImage"
 import { useSiteData } from "@/hooks/use-site-data"
 import { renderCategoryIcon } from "@/lib/icons"
 import type { SiteSettings } from "@/lib/site-data"
@@ -61,19 +62,19 @@ interface CartItem {
 
 // Componente de tarjeta de platillo
 const CATEGORY_FALLBACK_IMAGES = {
-  desayunos: "/IMAGENES/1.png",
-  entradas: "/IMAGENES/2.png",
-  ensaladas: "/IMAGENES/3.png",
-  sopas: "/IMAGENES/4.png",
-  paninis: "/IMAGENES/5.png",
-  pastas: "/IMAGENES/6.png",
-  pizzas: "/IMAGENES/7.png",
-  especialidades: "/IMAGENES/8.png",
-  cortes: "/IMAGENES/9.png",
-  bebidas: "/IMAGENES/2.png",
-  calientes: "/IMAGENES/1.png",
-  postres: "/IMAGENES/8.png",
-  infantil: "/IMAGENES/5.png",
+  desayunos: "/IMAGENES/1.webp",
+  entradas: "/IMAGENES/2.webp",
+  ensaladas: "/IMAGENES/3.webp",
+  sopas: "/IMAGENES/4.webp",
+  paninis: "/IMAGENES/5.webp",
+  pastas: "/IMAGENES/6.webp",
+  pizzas: "/IMAGENES/7.webp",
+  especialidades: "/IMAGENES/8.webp",
+  cortes: "/IMAGENES/9.webp",
+  bebidas: "/IMAGENES/2.webp",
+  calientes: "/IMAGENES/1.webp",
+  postres: "/IMAGENES/8.webp",
+  infantil: "/IMAGENES/5.webp",
 }
 
 
@@ -104,13 +105,13 @@ function DishCard({ item, index, onAdd, onSelect }: { item: any; index: number; 
     >
       <div className="relative h-48 lg:h-52 overflow-hidden bg-white">
         {hasImage ? (
-          <img
-            src={item.image}
-            alt={item.name}
-            loading="lazy"
-            decoding="async"
+          <SmartImage
+            src={item.image!}
+            alt={`${item.name} — ${item.ingredients?.slice(0, 60) ?? "platillo de Maria Bela en Coacalco"}`}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 350px"
             onError={() => setImageError(true)}
-            className="w-full h-full object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.06]"
+            className="object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.06]"
           />
         ) : (
           <div className="w-full h-full bg-white flex items-center justify-center border-b border-stone-100">
@@ -482,9 +483,12 @@ function CartSidebar({
                         >
                           <div className="relative shrink-0">
                             {item.image ? (
-                              <img
+                              <SmartImage
                                 src={item.image}
                                 alt={item.name}
+                                width={88}
+                                height={88}
+                                sizes="88px"
                                 className="w-[88px] h-[88px] object-cover rounded-2xl shadow-sm"
                               />
                             ) : (
@@ -703,11 +707,11 @@ function AboutUs() {
                 className="flex flex-col gap-4 md:gap-6 pt-12"
               >
                 <div className="rounded-3xl overflow-hidden shadow-2xl relative group aspect-[4/5]">
-                  <img src="/IMAGENES/1.png" alt="Restaurante 1" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <SmartImage src="/IMAGENES/1.webp" alt="Interior del restaurante Maria Bela en Coacalco, ambiente familiar" fill sizes="(max-width: 768px) 50vw, 300px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl relative group aspect-square">
-                  <img src="/IMAGENES/4.png" alt="Restaurante 2" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <SmartImage src="/IMAGENES/4.webp" alt="Platillos de comida italiana y mexicana servidos en Maria Bela Coacalco" fill sizes="(max-width: 768px) 50vw, 300px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
               </motion.div>
@@ -719,11 +723,11 @@ function AboutUs() {
                 className="flex flex-col gap-4 md:gap-6"
               >
                 <div className="rounded-3xl overflow-hidden shadow-2xl relative group aspect-square">
-                  <img src="/IMAGENES/5.png" alt="Restaurante 3" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <SmartImage src="/IMAGENES/5.webp" alt="Desayunos en Coacalco: mesa servida en el restaurante Maria Bela" fill sizes="(max-width: 768px) 50vw, 300px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl relative group aspect-[4/5]">
-                  <img src="/IMAGENES/2.png" alt="Restaurante 4" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <SmartImage src="/IMAGENES/2.webp" alt="Pizzas y pastas artesanales del restaurante italiano Maria Bela en Coacalco" fill sizes="(max-width: 768px) 50vw, 300px" className="object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                 </div>
               </motion.div>
@@ -793,11 +797,14 @@ function ChefSpecial({ items, onAdd, onSelect }: { items: any[]; onAdd: (item: a
             >
               {hasImage ? (
                 <>
-                  <img
-                    src={item.image}
-                    alt={item.name}
+                  <SmartImage
+                    src={item.image!}
+                    alt={`${item.name} — recomendación del chef en Maria Bela Coacalco`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    quality={85}
                     onError={() => setImageError(true)}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0D261C] via-[#0D261C]/20 to-transparent md:hidden" />
                 </>
@@ -860,15 +867,15 @@ function ChefSpecial({ items, onAdd, onSelect }: { items: any[]; onAdd: (item: a
 }
 
 const HERO_IMAGES = [
-  "/IMAGENES/1.png",
-  "/IMAGENES/2.png",
-  "/IMAGENES/3.png",
-  "/IMAGENES/4.png",
-  "/IMAGENES/5.png",
-  "/IMAGENES/6.png",
-  "/IMAGENES/7.png",
-  "/IMAGENES/8.png",
-  "/IMAGENES/9.png",
+  "/IMAGENES/1.webp",
+  "/IMAGENES/2.webp",
+  "/IMAGENES/3.webp",
+  "/IMAGENES/4.webp",
+  "/IMAGENES/5.webp",
+  "/IMAGENES/6.webp",
+  "/IMAGENES/7.webp",
+  "/IMAGENES/8.webp",
+  "/IMAGENES/9.webp",
 ]
 
 
@@ -1196,10 +1203,15 @@ export default function MenuClient({
               }}
               className="absolute inset-0"
             >
-              <img
+              <SmartImage
                 src={HERO_IMAGES[currentHeroIndex]}
-                className="w-full h-full object-cover opacity-75"
-                alt="Maria Bela Ambience"
+                fill
+                sizes="100vw"
+                quality={82}
+                loading="eager"
+                fetchPriority={currentHeroIndex === 0 ? "high" : "auto"}
+                className="object-cover opacity-75"
+                alt="Ambiente del restaurante Maria Bela en Coacalco — comida mexicana e italiana"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0D261C]/80 via-black/40 to-black/30" />
             </motion.div>
@@ -1619,11 +1631,13 @@ export default function MenuClient({
           viewport={{ once: true }}
           className="mt-20 bg-[#0D261C] rounded-3xl p-8 md:p-16 relative overflow-hidden shadow-2xl"
         >
-          <div className="absolute inset-0 opacity-20">
-            <img
-              src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1200"
-              className="w-full h-full object-cover"
-              alt="Banner"
+          <div className="absolute inset-0 opacity-20" aria-hidden="true">
+            <SmartImage
+              src="/IMAGENES/6.webp"
+              fill
+              sizes="(max-width: 768px) 100vw, 800px"
+              className="object-cover"
+              alt=""
             />
           </div>
           <div className="relative z-10 max-w-2xl">
@@ -1740,6 +1754,7 @@ export default function MenuClient({
               href={settings.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Instagram de Maria Bela"
               className="bg-white/10 p-3 rounded-full text-white hover:bg-[#D4AF37] hover:text-[#0D261C] transition-colors"
             >
               <Instagram size={20} />
@@ -1748,11 +1763,46 @@ export default function MenuClient({
               href={settings.facebookUrl}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Facebook de Maria Bela"
               className="bg-white/10 p-3 rounded-full text-white hover:bg-[#D4AF37] hover:text-[#0D261C] transition-colors"
             >
               <Facebook size={20} />
             </a>
           </div>
+
+          {/* Enlaces internos SEO (interlinking hacia páginas locales) */}
+          <nav
+            aria-label="Explora Maria Bela"
+            className="mb-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm"
+          >
+            <a href="/menu" className="text-stone-300 hover:text-[#D4AF37] transition-colors">
+              Menú y precios
+            </a>
+            <a href="/desayunos-coacalco" className="text-stone-300 hover:text-[#D4AF37] transition-colors">
+              Desayunos en Coacalco
+            </a>
+            <a href="/comida-italiana-coacalco" className="text-stone-300 hover:text-[#D4AF37] transition-colors">
+              Comida italiana en Coacalco
+            </a>
+            <a href="/comida-mexicana-coacalco" className="text-stone-300 hover:text-[#D4AF37] transition-colors">
+              Comida mexicana en Coacalco
+            </a>
+            <a href="/ubicacion" className="text-stone-300 hover:text-[#D4AF37] transition-colors">
+              Ubicación y cómo llegar
+            </a>
+            <a href="/reservar" className="text-stone-300 hover:text-[#D4AF37] transition-colors">
+              Reservaciones
+            </a>
+          </nav>
+
+          {/* Bloque de contexto local (contenido SEO natural en el home) */}
+          <p className="mx-auto mb-8 max-w-3xl text-center text-xs leading-relaxed text-stone-500">
+            Maria Bela es un restaurante familiar en el centro de Coacalco de Berriozábal, Estado de
+            México, donde la comida mexicana se encuentra con la comida italiana. Sirve desayunos,
+            pastas artesanales, pizzas al horno, cortes selectos, ensaladas y cafetería. Uno de los
+            mejores lugares para desayunar y comer en Coacalco, con ambiente familiar y platillos para
+            compartir.
+          </p>
 
           <div className="pt-8 border-t border-white/10 text-center">
             <p className="text-stone-500 text-[10px] font-bold uppercase tracking-[0.3em]">
@@ -1808,10 +1858,13 @@ export default function MenuClient({
               <div className="relative w-full sm:w-1/2 h-[35vh] sm:h-full shrink-0 overflow-hidden bg-white">
                 {selectedDish.image ? (
                   <>
-                    <img
+                    <SmartImage
                       src={selectedDish.image}
-                      alt={selectedDish.name}
-                      className="w-full h-full object-cover transition-transform duration-[800ms] hover:scale-105"
+                      alt={`${selectedDish.name} — ${selectedDish.ingredients?.slice(0, 70) ?? "platillo de Maria Bela Coacalco"}`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      quality={88}
+                      className="object-cover transition-transform duration-[800ms] hover:scale-105"
                     />
                     {/* Vignette Gradients */}
                     {/* Top overlay to read close button & drag handle */}

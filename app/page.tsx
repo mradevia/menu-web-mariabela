@@ -10,7 +10,9 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import MenuClient from "./MenuClient"
 import { fetchMenu, fetchSettings } from "@/lib/services/menu"
 import type { Database } from "@/lib/supabase/types"
-import type { MenuData, SiteSettings } from "@/lib/site-data"
+import { DEFAULT_MENU, type MenuData, type SiteSettings } from "@/lib/site-data"
+import JsonLd from "@/components/seo/JsonLd"
+import { buildGraph, menuSchema, faqSchema, breadcrumbSchema, HOME_FAQS } from "@/lib/seo/schema"
 
 const USE_SUPABASE = process.env.NEXT_PUBLIC_DATA_SOURCE === "supabase"
 
@@ -43,5 +45,23 @@ export default async function Page() {
     }
   }
 
-  return <MenuClient initialMenu={initialMenu} initialSettings={initialSettings} />
+  // Schema.org de esta página: el menú completo (rich result de menú), las
+  // preguntas frecuentes (rich result FAQ) y el breadcrumb. Usa el menú real si
+  // se cargó; si no, el menú por defecto, para que el JSON-LD nunca vaya vacío.
+  const menuForSchema: MenuData = initialMenu ?? DEFAULT_MENU
+  const pageJsonLd = buildGraph([
+    menuSchema(menuForSchema),
+    faqSchema(HOME_FAQS),
+    breadcrumbSchema([
+      { name: "Inicio", path: "/" },
+      { name: "Menú", path: "/menu" },
+    ]),
+  ])
+
+  return (
+    <>
+      <JsonLd data={pageJsonLd} />
+      <MenuClient initialMenu={initialMenu} initialSettings={initialSettings} />
+    </>
+  )
 }

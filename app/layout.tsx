@@ -4,17 +4,50 @@ import { Geist } from 'next/font/google'
 import { Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/sonner'
+import JsonLd from '@/components/seo/JsonLd'
+import { ROOT_METADATA } from '@/lib/seo/metadata'
+import { BUSINESS, LOCAL_KEYWORDS } from '@/lib/seo/business'
+import { buildGraph, restaurantSchema, organizationAndWebsiteSchema } from '@/lib/seo/schema'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
+const _geist = Geist({ subsets: ["latin"], display: "swap" });
+const _playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"], display: "swap" });
+
+// Datos estructurados globales del negocio (LocalBusiness + Restaurant +
+// Organization + WebSite). Aplican a todo el sitio para el SEO local.
+const GLOBAL_JSONLD = buildGraph([
+  restaurantSchema(),
+  ...organizationAndWebsiteSchema(),
+])
 
 export const metadata: Metadata = {
-  title: 'Maria Bela - México & Italia | Restaurante en Coacalco',
-  description: 'Donde el corazón de México se encuentra con el alma de Italia. Desayunos, Pastas, Pizzas, Cortes selectos y más. Abierto Lunes a Sábado 9:00 AM - 4:00 PM.',
-  applicationName: 'Maria Bela',
-  generator: 'v0.app',
+  ...ROOT_METADATA,
+  title: {
+    default: 'Maria Bela | Restaurante en Coacalco — Comida Mexicana e Italiana',
+    template: '%s | Maria Bela — Restaurante en Coacalco',
+  },
+  description:
+    'Restaurante en Coacalco donde México se encuentra con Italia. Desayunos, comida mexicana, pastas, pizzas al horno, cortes selectos y cafetería. Ambiente familiar en el centro de Coacalco de Berriozábal. Abierto todos los días desde las 8:00 AM.',
+  keywords: LOCAL_KEYWORDS,
+  generator: 'Next.js',
   manifest: '/site.webmanifest',
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    locale: 'es_MX',
+    url: '/',
+    siteName: `${BUSINESS.name} · Restaurante en Coacalco`,
+    title: 'Maria Bela | Restaurante en Coacalco — Comida Mexicana e Italiana',
+    description:
+      'Desayunos, comida italiana y mexicana, pizzas y pastas en el centro de Coacalco. Restaurante familiar, abierto todos los días desde las 8:00 AM.',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Maria Bela — Restaurante en Coacalco' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Maria Bela | Restaurante en Coacalco',
+    description: 'Comida mexicana e italiana, desayunos, pizzas y pastas en el centro de Coacalco.',
+    images: ['/opengraph-image'],
+  },
   icons: {
     icon: [
       {
@@ -56,6 +89,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es-MX">
+      <head>
+        {/* Preconnect a orígenes críticos para mejorar LCP */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Datos estructurados globales del negocio (SEO local) */}
+        <JsonLd data={GLOBAL_JSONLD} />
+      </head>
       <body className={`font-sans antialiased`}>
         {children}
         <Toaster richColors position="top-center" />

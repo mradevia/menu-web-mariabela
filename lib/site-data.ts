@@ -66,17 +66,17 @@ export interface SiteSettings {
 //  Configuración del negocio por defecto
 // ---------------------------------------------------------------------------
 export const DEFAULT_SETTINGS: SiteSettings = {
-  whatsapp: "5215512345678",
-  phoneDisplay: "55 1234 5678",
+  whatsapp: "525528838362",
+  phoneDisplay: "55 2883 8362",
   instagramUrl: "https://www.instagram.com/mariabelacoacalco",
   instagramHandle: "@mariabelacoacalco",
   facebookUrl: "https://www.facebook.com/mariabelacoacalco",
-  addressLine1: "Eje 8, Villa de las Flores",
-  addressLine2: "Coacalco de Berriozábal, EdoMéx.",
-  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Maria+Bela+Coacalco",
-  scheduleDays: "Lunes a Sábado",
-  scheduleHours: "9:00 AM — 4:00 PM",
-  scheduleShort: "LUN-SÁB 9:00 — 16:00",
+  addressLine1: "And. Severiano Reyes 27A (Palacio Municipal)",
+  addressLine2: "Coacalco de Berriozábal, Estado de México, C.P. 55700",
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Maria+Bela+Coacalco+Severiano+Reyes",
+  scheduleDays: "Domingo a Sábado",
+  scheduleHours: "8:00 AM — 5:00 PM (Vie y Sáb hasta 10:00 PM)",
+  scheduleShort: "DOM-JUE 8:00–17:00 · VIE-SÁB 8:00–22:00",
   menuUrl: "",
   featuredDishIds: [],
 }
@@ -90,18 +90,18 @@ export const DEFAULT_MENU: MenuData = {
     subtitle: "Selección de la casa",
     icon: "Coffee",
     items: [
-      { id: 2, name: "Huevos al Gusto", price: 90, ingredients: "Salchicha, jamón, estrellados, rancheros, divorciados, a la mexicana, tocino o a la albañil.", group: "Huevos", image: "/IMAGENES COMIDA/huevos 2.png" },
-      { id: 15, name: "Huevos Mariabela", price: 105, ingredients: "Huevos revueltos bañados en salsa de guajillo.", group: "Huevos", image: "/IMAGENES COMIDA/huevos mexicanos.png" },
+      { id: 2, name: "Huevos al Gusto", price: 90, ingredients: "Salchicha, jamón, estrellados, rancheros, divorciados, a la mexicana, tocino o a la albañil.", group: "Huevos", image: "/IMAGENES COMIDA/huevos 2.webp" },
+      { id: 15, name: "Huevos Mariabela", price: 105, ingredients: "Huevos revueltos bañados en salsa de guajillo.", group: "Huevos", image: "/IMAGENES COMIDA/huevos mexicanos.webp" },
 
       { id: 3, name: "Omelette al Gusto", price: 105, ingredients: "Champiñón, jamón, espinaca, tocino, quesos o chorizo.", group: "Omelettes" },
       { id: 4, name: "Omelette Gourmet", price: 119, ingredients: "Espinaca fresca y queso de cabra.", group: "Omelettes", tags: ["Gourmet"] },
       { id: 200, name: "Omelette de Bistec", price: 195, ingredients: "Tiras de bistec salteadas con papa, pimiento morrón, cebolla, champiñón, jitomate y queso mozzarella.", group: "Omelettes" },
 
-      { id: 5, name: "Molletes Tradicionales (2 pzs.)", price: 85, ingredients: "Frijol refrito, jamón, queso gratinado y pico de gallo.", group: "Molletes", image: "/IMAGENES COMIDA/molletes.png" },
-      { id: 6, name: "Molletes con Chorizo o Champiñón", price: 95, ingredients: "Frijol refrito, queso gratinado y tu elección de chorizo o champiñón.", group: "Molletes", image: "/IMAGENES COMIDA/molletes.png" },
+      { id: 5, name: "Molletes Tradicionales (2 pzs.)", price: 85, ingredients: "Frijol refrito, jamón, queso gratinado y pico de gallo.", group: "Molletes", image: "/IMAGENES COMIDA/molletes.webp" },
+      { id: 6, name: "Molletes con Chorizo o Champiñón", price: 95, ingredients: "Frijol refrito, queso gratinado y tu elección de chorizo o champiñón.", group: "Molletes", image: "/IMAGENES COMIDA/molletes.webp" },
 
-      { id: 9, name: "Chilaquiles", price: 80, ingredients: "Verdes, rojos o divorciados.", group: "Chilaquiles", image: "/IMAGENES COMIDA/chilaquiles.png" },
-      { id: 1, name: "Volcán de Chilaquiles", price: 129, ingredients: "Pan sourdough con orden de chilaquiles, pollo, crema y queso gratinado.", group: "Chilaquiles", tags: ["Estrella"], image: "/IMAGENES COMIDA/volcan.png" },
+      { id: 9, name: "Chilaquiles", price: 80, ingredients: "Verdes, rojos o divorciados.", group: "Chilaquiles", image: "/IMAGENES COMIDA/chilaquiles.webp" },
+      { id: 1, name: "Volcán de Chilaquiles", price: 129, ingredients: "Pan sourdough con orden de chilaquiles, pollo, crema y queso gratinado.", group: "Chilaquiles", tags: ["Estrella"], image: "/IMAGENES COMIDA/volcan.webp" },
 
       { id: 11, name: "Enchiladas (3 pzas.)", price: 107, ingredients: "Verdes, rojas o divorciadas, rellenas de pollo.", group: "Enchiladas" },
       { id: 10, name: "Enfrijoladas (3 pzas.)", price: 107, ingredients: "Bañadas en salsa de frijol con crema, queso y aguacate.", group: "Enchiladas" },
@@ -111,7 +111,7 @@ export const DEFAULT_MENU: MenuData = {
       { id: 7, name: "Croissant de Jamón", price: 99, ingredients: "Jamón, queso panela, queso manchego, lechuga y jitomate.", group: "Panes & Sándwiches" },
       { id: 8, name: "Bagel de Jamón", price: 99, ingredients: "Bagel con huevo, jamón, queso manchego, queso panela, lechuga y jitomate.", group: "Panes & Sándwiches" },
       { id: 17, name: "Sándwich Gratinado", price: 107, ingredients: "Pan de caja con jamón, lechuga, jitomate, queso gratinado y huevo estrellado.", group: "Panes & Sándwiches" },
-      { id: 14, name: "Desayuno Mariabela", price: 105, ingredients: "Orden de waffles acompañados con huevo estrellado o al gusto.", group: "Panes & Sándwiches", tags: ["De la Casa"], image: "/IMAGENES COMIDA/waffles.png" },
+      { id: 14, name: "Desayuno Mariabela", price: 105, ingredients: "Orden de waffles acompañados con huevo estrellado o al gusto.", group: "Panes & Sándwiches", tags: ["De la Casa"], image: "/IMAGENES COMIDA/waffles.webp" },
 
       { id: 202, name: "Desayuno Mexicano", price: 199, ingredients: "Pechuga o carne asada o fajitas de arrachera, longaniza, nopal asado y chilaquiles verdes.", group: "Especialidades", tags: ["De la Casa"] },
       { id: 203, name: "Tortilla Española", price: 120, ingredients: "Tradicional tortilla española preparada con papa y chorizo, acompañada de frijoles refritos.", group: "Especialidades" },
@@ -120,11 +120,11 @@ export const DEFAULT_MENU: MenuData = {
       { id: 18, name: "Sincronizadas", price: 80, ingredients: "Dos tortillas de harina rellenas de jamón y queso manchego, acompañadas de salsa mexicana.", group: "Especialidades" },
       { id: 19, name: "Tacos Campestres", price: 95, ingredients: "Tres tacos preparados en hoja de lechuga con pollo, champiñón, elote y jitomate.", group: "Especialidades", tags: ["Light"] },
       { id: 21, name: "Árabe Mariabela", price: 99, ingredients: "Jamón de pavo, queso panela, manzana, lechuga y pepino.", group: "Especialidades" },
-      { id: 23, name: "Sopesitos Sencillos (3 pzs.)", price: 85, ingredients: "Frijol refrito, crema, queso y lechuga.", group: "Especialidades", image: "/IMAGENES COMIDA/sopes.png" },
+      { id: 23, name: "Sopesitos Sencillos (3 pzs.)", price: 85, ingredients: "Frijol refrito, crema, queso y lechuga.", group: "Especialidades", image: "/IMAGENES COMIDA/sopes.webp" },
       { id: 16, name: "Sope Light", price: 95, ingredients: "Nopal con pollo deshebrado, bañado en salsa verde, lechuga y queso.", group: "Especialidades", tags: ["Light"] },
-      { id: 24, name: "Sopesitos de Pollo o Carne Asada (3 pzs.)", price: 120, ingredients: "Frijol refrito, crema, queso y lechuga.", group: "Especialidades", image: "/IMAGENES COMIDA/sopes.png" },
-      { id: 13, name: "Waffles Dulces", price: 85, ingredients: "Acompañados con frutos rojos, chocolate y crema dulce.", group: "Especialidades", image: "/IMAGENES COMIDA/waffles.png" },
-      { id: 25, name: "Hotcakes", price: 75, ingredients: "Orden de 3 hotcakes esponjosos.", group: "Especialidades", image: "/IMAGENES COMIDA/HOTCAKES.png" },
+      { id: 24, name: "Sopesitos de Pollo o Carne Asada (3 pzs.)", price: 120, ingredients: "Frijol refrito, crema, queso y lechuga.", group: "Especialidades", image: "/IMAGENES COMIDA/sopes.webp" },
+      { id: 13, name: "Waffles Dulces", price: 85, ingredients: "Acompañados con frutos rojos, chocolate y crema dulce.", group: "Especialidades", image: "/IMAGENES COMIDA/waffles.webp" },
+      { id: 25, name: "Hotcakes", price: 75, ingredients: "Orden de 3 hotcakes esponjosos.", group: "Especialidades", image: "/IMAGENES COMIDA/HOTCAKES.webp" },
     ],
   },
   entradas: {
@@ -196,7 +196,7 @@ export const DEFAULT_MENU: MenuData = {
     items: [
       { id: 80, name: "Lasaña Boloñesa", price: 195, ingredients: "Receta secreta de la casa con carne de res, pomodoro y mozzarella gratinada.", tags: ["Best Seller"] },
       { id: 81, name: "Pasta Alfredo", price: 100, ingredients: "Pasta larga con crema, vino blanco y queso parmesano." },
-      { id: 82, name: "Pasta Carbonara", price: 115, ingredients: "Pasta larga con tocino, vino blanco, crema y queso parmesano.", image: "/IMAGENES COMIDA/spaguetti.png" },
+      { id: 82, name: "Pasta Carbonara", price: 115, ingredients: "Pasta larga con tocino, vino blanco, crema y queso parmesano.", image: "/IMAGENES COMIDA/spaguetti.webp" },
       { id: 83, name: "Pasta Crema di Funghi", price: 130, ingredients: "Pasta corta en salsa cremosa con vino blanco, queso parmesano y champiñones." },
       { id: 84, name: "Frutti di Mare", price: 170, ingredients: "Camarones y pescado al ajo, vino blanco y queso parmesano.", tags: ["Premium"] },
       { id: 85, name: "Bella Vista", price: 160, ingredients: "Camarones salteados con aceite de oliva, ajo, vino blanco y salsa rosa." },
@@ -225,7 +225,7 @@ export const DEFAULT_MENU: MenuData = {
       { id: 106, name: "Pizza Napolitana", price: 130, ingredients: "Tomate, mozzarella, pepperoni, champiñón, cebolla y jalapeño." },
       { id: 101, name: "Pizza Prosciutto", price: 125, ingredients: "Tomate, mozzarella y jamón serrano.", tags: ["Italia"] },
       { id: 102, name: "Pizza Hawaiana", price: 125, ingredients: "Tomate, mozzarella, jamón y piña." },
-      { id: 103, name: "Pizza Camarón", price: 170, ingredients: "Tomate, mozzarella, camarón, pimiento morrón y cebolla.", tags: ["Premium"], image: "/IMAGENES COMIDA/pizza camaron.png" },
+      { id: 103, name: "Pizza Camarón", price: 170, ingredients: "Tomate, mozzarella, camarón, pimiento morrón y cebolla.", tags: ["Premium"], image: "/IMAGENES COMIDA/pizza camaron.webp" },
       { id: 104, name: "Pizza Cuatro Quesos", price: 125, ingredients: "Tomate, mozzarella, gouda, parmesano y manchego." },
       { id: 105, name: "Pizza Boloñesa", price: 140, ingredients: "Tomate, mozzarella, salsa boloñesa, jalapeño y aguacate." },
       { id: 107, name: "Pizza Mariabela", price: 120, ingredients: "Tomate, mozzarella, tocino, pepperoni, pimiento morrón y cebolla.", tags: ["De la Casa"] },
@@ -276,7 +276,7 @@ export const DEFAULT_MENU: MenuData = {
       { id: 145, name: "Soda Italiana", price: 85, ingredients: "Refrescante mezcla de jarabe y agua mineral.", group: "Bebidas Frías" },
       { id: 141, name: "Frappés", price: 55, ingredients: "Frappuccino, vainilla, rompope, crema irlandesa, caramelo, moka, cajeta o amaretto.", group: "Bebidas Frías" },
       { id: 143, name: "Smoothies", price: 50, ingredients: "Mango, fresa, sandía, mora azul o piña colada.", group: "Bebidas Frías" },
-      { id: 144, name: "Malteadas", price: 60, ingredients: "Vainilla, chocolate o fresa. Base de leche y helado. Leche deslactosada +$10.", group: "Bebidas Frías", image: "/IMAGENES COMIDA/malteada.png" },
+      { id: 144, name: "Malteadas", price: 60, ingredients: "Vainilla, chocolate o fresa. Base de leche y helado. Leche deslactosada +$10.", group: "Bebidas Frías", image: "/IMAGENES COMIDA/malteada.webp" },
 
       { id: 159, name: "Jarra de Agua del Día", price: 99, ingredients: "Agua fresca de temporada para compartir.", group: "Para Compartir" },
       { id: 160, name: "Jarra de Naranjada", price: 140, ingredients: "Naranjada natural para compartir.", group: "Para Compartir" },
