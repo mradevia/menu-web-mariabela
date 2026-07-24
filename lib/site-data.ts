@@ -90,8 +90,8 @@ export const DEFAULT_MENU: MenuData = {
     subtitle: "Selección de la casa",
     icon: "Coffee",
     items: [
-      { id: 2, name: "Huevos al Gusto", price: 90, ingredients: "Salchicha, jamón, estrellados, rancheros, divorciados, a la mexicana, tocino o a la albañil.", group: "Huevos", image: "/IMAGENES COMIDA/huevos 2.webp" },
-      { id: 15, name: "Huevos Mariabela", price: 105, ingredients: "Huevos revueltos bañados en salsa de guajillo.", group: "Huevos", image: "/IMAGENES COMIDA/huevos mexicanos.webp" },
+      { id: 2, name: "Huevos al Gusto", price: 90, ingredients: "Salchicha, jamón, estrellados, rancheros, divorciados, a la mexicana, tocino o a la albañil.", group: "Huevos", image: "/IMAGENES COMIDA/huevos mexicanos.webp" },
+      { id: 15, name: "Huevos Mariabela", price: 105, ingredients: "Huevos revueltos bañados en salsa de guajillo.", group: "Huevos", image: "/IMAGENES COMIDA/huevos mariabela.webp" },
 
       { id: 3, name: "Omelette al Gusto", price: 105, ingredients: "Champiñón, jamón, espinaca, tocino, quesos o chorizo.", group: "Omelettes" },
       { id: 4, name: "Omelette Gourmet", price: 119, ingredients: "Espinaca fresca y queso de cabra.", group: "Omelettes", tags: ["Gourmet"] },
@@ -103,9 +103,9 @@ export const DEFAULT_MENU: MenuData = {
       { id: 9, name: "Chilaquiles", price: 80, ingredients: "Verdes, rojos o divorciados.", group: "Chilaquiles", image: "/IMAGENES COMIDA/chilaquiles.webp" },
       { id: 1, name: "Volcán de Chilaquiles", price: 129, ingredients: "Pan sourdough con orden de chilaquiles, pollo, crema y queso gratinado.", group: "Chilaquiles", tags: ["Estrella"], image: "/IMAGENES COMIDA/volcan.webp" },
 
-      { id: 11, name: "Enchiladas (3 pzas.)", price: 107, ingredients: "Verdes, rojas o divorciadas, rellenas de pollo.", group: "Enchiladas" },
-      { id: 10, name: "Enfrijoladas (3 pzas.)", price: 107, ingredients: "Bañadas en salsa de frijol con crema, queso y aguacate.", group: "Enchiladas" },
-      { id: 12, name: "Enchiladas Suizas (3 pzas.)", price: 135, ingredients: "Cubiertas con salsa suiza, queso gratinado y ajonjolí.", group: "Enchiladas", tags: ["Premium"] },
+      { id: 11, name: "Enchiladas (3 pzas.)", price: 107, ingredients: "Verdes, rojas o divorciadas, rellenas de pollo.", group: "Enchiladas", image: "/IMAGENES COMIDA/enchiladas.webp" },
+      { id: 10, name: "Enfrijoladas (3 pzas.)", price: 107, ingredients: "Bañadas en salsa de frijol con crema, queso y aguacate.", group: "Enchiladas", image: "/IMAGENES COMIDA/enfirjoladas.webp" },
+      { id: 12, name: "Enchiladas Suizas (3 pzas.)", price: 135, ingredients: "Cubiertas con salsa suiza, queso gratinado y ajonjolí.", group: "Enchiladas", tags: ["Premium"], image: "/IMAGENES COMIDA/enchiladas suizas.webp" },
       { id: 201, name: "Enmoladas (3 pzas.)", price: 155, ingredients: "Tres piezas rellenas de pollo bañadas en mole. Acompañadas de crema, queso y cebolla.", group: "Enchiladas" },
 
       { id: 7, name: "Croissant de Jamón", price: 99, ingredients: "Jamón, queso panela, queso manchego, lechuga y jitomate.", group: "Panes & Sándwiches" },
@@ -118,7 +118,7 @@ export const DEFAULT_MENU: MenuData = {
       { id: 22, name: "Pechuga Napolitana", price: 140, ingredients: "Pechuga asada bañada en salsa pomodoro con queso gratinado.", group: "Especialidades", tags: ["Premium"] },
       { id: 20, name: "Wraps", price: 95, ingredients: "Tortilla de harina u hoja de lechuga rellena de jitomate, cebolla, elote, champiñón, atún o pollo.", group: "Especialidades" },
       { id: 18, name: "Sincronizadas", price: 80, ingredients: "Dos tortillas de harina rellenas de jamón y queso manchego, acompañadas de salsa mexicana.", group: "Especialidades" },
-      { id: 19, name: "Tacos Campestres", price: 95, ingredients: "Tres tacos preparados en hoja de lechuga con pollo, champiñón, elote y jitomate.", group: "Especialidades", tags: ["Light"] },
+      { id: 19, name: "Tacos Campestres", price: 95, ingredients: "Tres tacos preparados en hoja de lechuga con pollo, champiñón, elote y jitomate.", group: "Especialidades", tags: ["Light"], image: "/IMAGENES COMIDA/tacos camprestres.webp" },
       { id: 21, name: "Árabe Mariabela", price: 99, ingredients: "Jamón de pavo, queso panela, manzana, lechuga y pepino.", group: "Especialidades" },
       { id: 23, name: "Sopesitos Sencillos (3 pzs.)", price: 85, ingredients: "Frijol refrito, crema, queso y lechuga.", group: "Especialidades", image: "/IMAGENES COMIDA/sopes.webp" },
       { id: 16, name: "Sope Light", price: 95, ingredients: "Nopal con pollo deshebrado, bañado en salsa verde, lechuga y queso.", group: "Especialidades", tags: ["Light"] },
@@ -195,8 +195,8 @@ export const DEFAULT_MENU: MenuData = {
     icon: "Pizza",
     items: [
       { id: 80, name: "Lasaña Boloñesa", price: 195, ingredients: "Receta secreta de la casa con carne de res, pomodoro y mozzarella gratinada.", tags: ["Best Seller"] },
-      { id: 81, name: "Pasta Alfredo", price: 100, ingredients: "Pasta larga con crema, vino blanco y queso parmesano." },
-      { id: 82, name: "Pasta Carbonara", price: 115, ingredients: "Pasta larga con tocino, vino blanco, crema y queso parmesano.", image: "/IMAGENES COMIDA/spaguetti.webp" },
+      { id: 81, name: "Pasta Alfredo", price: 100, ingredients: "Pasta larga con crema, vino blanco y queso parmesano.", image: "/IMAGENES COMIDA/La pasta Alfredo.webp" },
+      { id: 82, name: "Pasta Carbonara", price: 115, ingredients: "Pasta larga con tocino, vino blanco, crema y queso parmesano." },
       { id: 83, name: "Pasta Crema di Funghi", price: 130, ingredients: "Pasta corta en salsa cremosa con vino blanco, queso parmesano y champiñones." },
       { id: 84, name: "Frutti di Mare", price: 170, ingredients: "Camarones y pescado al ajo, vino blanco y queso parmesano.", tags: ["Premium"] },
       { id: 85, name: "Bella Vista", price: 160, ingredients: "Camarones salteados con aceite de oliva, ajo, vino blanco y salsa rosa." },

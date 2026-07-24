@@ -75,8 +75,8 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-serif: 'Playfair Display', 'Georgia', serif;
+  --font-sans: var(--font-geist), 'Geist', 'Geist Fallback', sans-serif;
+  --font-serif: var(--font-montserrat), 'Montserrat', sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   
   /* Maria Bela Brand Colors */

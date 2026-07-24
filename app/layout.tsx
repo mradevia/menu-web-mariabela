@@ -1,7 +1,6 @@
 import React from "react"
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
-import { Playfair_Display } from 'next/font/google'
+import { Geist, Montserrat } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/sonner'
 import JsonLd from '@/components/seo/JsonLd'
@@ -10,8 +9,8 @@ import { BUSINESS, LOCAL_KEYWORDS } from '@/lib/seo/business'
 import { buildGraph, restaurantSchema, organizationAndWebsiteSchema } from '@/lib/seo/schema'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"], display: "swap" });
-const _playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"], display: "swap" });
+const _geist = Geist({ subsets: ["latin"], display: "swap", variable: "--font-geist" });
+const _montserrat = Montserrat({ subsets: ["latin"], weight: ["400", "500", "600", "700"], display: "swap", variable: "--font-montserrat" });
 
 // Datos estructurados globales del negocio (LocalBusiness + Restaurant +
 // Organization + WebSite). Aplican a todo el sitio para el SEO local.
@@ -96,7 +95,7 @@ export default function RootLayout({
         {/* Datos estructurados globales del negocio (SEO local) */}
         <JsonLd data={GLOBAL_JSONLD} />
       </head>
-      <body className={`font-sans antialiased`}>
+      <body className={`${_geist.variable} ${_montserrat.variable} font-sans antialiased`}>
         {children}
         <Toaster richColors position="top-center" />
         <Analytics />
